@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Model
+
+model AKUN {
+  ID_AKUN   Int     @id
+  ID_ROLE   Int
+  EMAIL     String
+  PASSWORD  String
+  ROLE      ROLE    @relation(fields: [ID_ROLE], references: [ID_ROLE])
+}
+
+model CUSTOMER {
+  ID_CUSTOMER      Int      @id
+  ID_AKUN          Int?
+  JENIS_CUSTOMER   String
+  NAMA_CUSTOMER    String
+  NAMA_INSTITUSI   String
+  NO_IDENTITAS     String
+  NOMOR_TELEPON    String
+  EMAIL            String
+  ALAMAT           String
+  AKUN             AKUN?    @relation(fields: [ID_AKUN], references: [ID_AKUN])
+}
+
+model DETAIL_KAMAR {
+  ID_DETAIL_KAMAR  Int    @id
+  ID_KAMAR         Int
+  NOMOR_KAMAR      Int?
+  KAMAR            KAMAR  @relation(fields: [ID_KAMAR], references: [ID_KAMAR])
+}
+
+model DETAIL_RESERVASI_FASILITAS {
+  ID_DETAIL_RESERVASI_FASILITAS  Int    @id
+  ID_RESERVASI                   Int
+  ID_FASILITAS                   Int
+  JUMLAH                         Int?
+  TOTAL                          Int?
+  RESERVASI                      RESERVASI  @relation(fields: [ID_RESERVASI], references: [ID_RESERVASI])
+  FASILITAS_TAMBAHAN             FASILITAS_TAMBAHAN @relation(fields: [ID_FASILITAS], references: [ID_FASILITAS])
+}
+
+model DETAIL_RESERVASI_KAMAR {
+  ID_DETAIL_RESERVASI_KAMAR  Int    @id
+  ID_KAMAR                   Int
+  ID_RESERVASI               Int
+  JUMLAH                     Int?
+  TOTAL                      Int?
+  RESERVASI                  RESERVASI  @relation(fields: [ID_RESERVASI], references: [ID_RESERVASI])
+  KAMAR                      KAMAR  @relation(fields: [ID_KAMAR], references: [ID_KAMAR])
+}
+
+model FASILITAS_TAMBAHAN {
+  ID_FASILITAS   Int     @id
+  NAMA_FASILITAS String
+  SATUAN         Int?
+  HARGA          Int?
+}
+
+model INFORMASI_UMUM {
+  INFORMASI_HOTEL      String
+  INFORMASI_KAMAR      String
+  INFORMASI_FASILITAS  String
+}
+
+model KAMAR {
+  ID_KAMAR    Int     @id
+  JENIS_KAMAR String
+  JENIS_BED   String
+  KAPASITAS   Int?
+  LUAS        Int?
+  FASILITAS   String?
+}
+
+model NOTA_PELUNASAN {
+  ID_NOTA       Int      @id
+  ID_RESERVASI  Int
+  NO_INVOICE    String
+  TAX           Int?
+  TOTAL         Int?
+  JAMINAN       Int?
+  DEPOSIT       Int?
+  CASH          Int?
+  RESERVASI     RESERVASI @relation(fields: [ID_RESERVASI], references: [ID_RESERVASI])
+}
+
+model PEGAWAI {
+  ID_PEGAWAI    Int     @id
+  ID_AKUN       Int?
+  NAMA_PEGAWAI  String
+  AKUN          AKUN?   @relation(fields: [ID_AKUN], references: [ID_AKUN])
+}
+
+model RESERVASI {
+  ID_RESERVASI         Int                 @id
+  ID_PEGAWAI           Int?
+  ID_CUSTOMER          Int?
+  ID_NOTA              Int?
+  TANGGAL_RESERVASI    DateTime?
+  CHECK_IN             DateTime?
+  CHECK_OUT            DateTime?
+  DEWASA               Int?
+  ANAK_ANAK            Int?
+  CUSTOMER             CUSTOMER?          @relation(fields: [ID_CUSTOMER], references: [ID_CUSTOMER])
+  NOTA_PELUNASAN       NOTA_PELUNASAN?    @relation(fields: [ID_NOTA], references: [ID_NOTA])
+  PEGAWAI              PEGAWAI?           @relation(fields: [ID_PEGAWAI], references: [ID_PEGAWAI])
+}
+
+model ROLE {
+  ID_ROLE    Int     @id
+  NAMA_ROLE  String
+}
+
+model SEASON {
+  ID_SEASON       Int      @id
+  JENIS_SEASON    String
+  TANGGAL_AWAL    DateTime?
+  TANGGAL_AKHIR   DateTime?
