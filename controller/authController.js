@@ -7,15 +7,18 @@ const loginValidator = require('../utils/loginValidator');
 const bcrypt = require('../utils/bcrypt');
 
 const register = async (req, res) => {
-    const prisma = new PrismaClient(); // Initialize the `prisma` variable
-    let response = null;
+    // Initialize the `prisma` variable
+    const prisma = new PrismaClient();
   
     try {
+      // Establish the database connection
+      await prisma.$connect();
+  
       const request = await akunValidator.validateAsync(req.body);
   
       const accounts = await prisma.akun.findUnique({ where: { username: request.username } });
       if (accounts) {
-        response = new Response.Error(true, 'Username Sudah Ada');
+        const response = new Response.Error(true, 'Username Sudah Ada');
         res.status(httpStatus.BAD_REQUEST).json(response);
         return;
       }
@@ -24,23 +27,38 @@ const register = async (req, res) => {
       const hashedPassword = await bcrypt.hash(request.password);
   
       // Remove the `username` field from the request object
-      delete request.username;
+      const { username, ...data } = request;
   
-      // Set the `password` field to a `Prisma.Hash` object
-      request.password = prisma.Hash.from(hashedPassword);
+      // Create the account
+      const account = await prisma.akun.create({
+        data: {
+          username,
+          password: hashedPassword,
+          Role: {
+            connect: { id: 6 }, // Replace `1` with the appropriate Role ID
+          },
+          ...data,
+        },
+      });
   
-      // Check if the `prisma` variable is defined before trying to use it
-      const account = prisma ? await prisma.akun.create({
-        ...request,
-      }) : undefined;
+      if (!account) {
+        // Handle the error here
+        console.error('Error creating account:', prisma.$error);
+        const response = new Response.Error(true, 'Error creating account');
+        res.status(httpStatus.BAD_REQUEST).json(response);
+        return;
+      }
   
-      response = new Response.Success(false, 'Akun berhasil dibuat', account);
+      const response = new Response.Success(false, 'Akun berhasil dibuat', account);
       res.status(httpStatus.OK).json(response);
     } catch (error) {
       // Handle the error here
       console.error(error);
-      response = new Response.Error(true, error.message);
+      const response = new Response.Error(true, error.message);
       res.status(httpStatus.BAD_REQUEST).json(response);
+    } finally {
+      // Disconnect from the database
+      await prisma.$disconnect();
     }
   };
 
