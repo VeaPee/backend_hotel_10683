@@ -30,11 +30,11 @@ model Akun {
 model Customer {
   id       Int    @id @default(autoincrement())
   akunId   Int?
-  jenis    String
-  nama     String
-  namaInstitusi String
-  noIdentitas   String
-  noTelpon   String
+  jenis_customer    String
+  nama_customer     String
+  nama_institusi String
+  nomor_identitas   String
+  nomor_telepon   String
   email    String
   alamat   String
 
@@ -47,7 +47,7 @@ model Customer {
 model DetailKamar {
   id      Int  @id @default(autoincrement())
   kamarId Int
-  noKamar Int?
+  nomor_kamar Int?
 
   Kamar Kamar @relation(fields: [kamarId], references: [id], onDelete: Cascade)
 
@@ -98,7 +98,7 @@ model Kamar {
   kapasitas Int?
   luas      Int?
   fasilitas String
-  jumlahBed    Int?
+  jumlah_bed    Int?
 
   DetailKamar          DetailKamar[]
   DetailReservasiKamar DetailReservasiKamar[]
@@ -110,7 +110,7 @@ model Kamar {
 model NotaPelunasan {
   id          Int    @id @default(autoincrement())
   reservasiId Int
-  noInvoice   String
+  no_invoice   String
   tax         Int?
   subtotal    Int?
   jaminan     Int?
@@ -138,8 +138,8 @@ model Reservasi {
   pegawaiId        Int?
   customerId       Int?
   tanggal_reservasi          DateTime
-  checkIn          DateTime
-  checkOut         DateTime
+  check_in          DateTime
+  check_out         DateTime
   jumlahDewasa           Int?
   jumlahAnakAnak         Int?
   status           String
@@ -164,10 +164,10 @@ model Role {
 
 model Season {
   id             Int      @id @default(autoincrement())
-  jenis          String
-  tanggalAwal    DateTime
-  tanggalAkhir   DateTime
-  perubahanHarga Float
+  jenis_season          String
+  tanggal_awal    DateTime
+  tanggal_akhir   DateTime
+  perubahan_harga Float
   Tarif          Tarif[]
 
   @@map("SEASON")

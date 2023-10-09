@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = new express.Router();
-const kamarController = require('../controllers/kamarController');
+const kamarController = require('../controller/kamarController');
 
 router.get('/kamar/getAllKamar', kamarController.getAllKamar);
 router.get('/kamar/getKamar/:id', kamarController.getKamar);
