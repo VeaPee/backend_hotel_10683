@@ -1,12 +1,10 @@
-const { Router } = require('express');
+const express = require('express');
 
-const router = Router();
-
+const router = new express.Router();
 const kamarController = require('../controllers/kamarController');
 
-// Kamar Routes
 router.get('/kamar/getAllKamar', kamarController.getAllKamar);
-router.post('/kamar/addKamar', kamarController.addKamar);
+router.get('/kamar/getKamar/:id', kamarController.getKamar);
 router.put('/kamar/updateKamar/:id', kamarController.updateKamar);
 router.delete('/kamar/deleteKamar/:id', kamarController.deleteKamar);
 

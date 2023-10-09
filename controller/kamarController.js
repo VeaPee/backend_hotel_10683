@@ -1,9 +1,17 @@
-const prisma = require('../prisma/index')
+const prisma = require('../prisma/prisma')
 
 const getAllKamar = async (req, res) => {
-  const kamars = await prisma.kamar.findMany()
+  const kamar = await prisma.kamar.findMany()
 
-  res.send(kamars)
+  res.send(kamar)
+}
+
+const getKamar = async (req, res) => {
+  const kamar = await prisma.kamar.find({
+    id: req.params.id
+  })
+
+  res.send(kamar)
 }
 
 const addKamar = async (req, res) => {
@@ -43,6 +51,7 @@ const deleteKamar = async (req, res) => {
 
 module.exports = {
   getAllKamar,
+  getKamar,
   addKamar,
   updateKamar,
   deleteKamar
