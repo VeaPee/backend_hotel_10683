@@ -12,117 +12,175 @@ datasource db {
 
 // Model
 
-model AKUN {
-  ID_AKUN   Int     @id
-  ID_ROLE   Int
-  EMAIL     String
-  PASSWORD  String
-  ROLE      ROLE    @relation(fields: [ID_ROLE], references: [ID_ROLE])
+model Akun {
+  id        Int      @id @default(autoincrement())
+  roleId    Int
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  Role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  Customer Customer[]
+  Pegawai  Pegawai[]
+
+  @@map("AKUN")
 }
 
-model CUSTOMER {
-  ID_CUSTOMER      Int      @id
-  ID_AKUN          Int?
-  JENIS_CUSTOMER   String
-  NAMA_CUSTOMER    String
-  NAMA_INSTITUSI   String
-  NO_IDENTITAS     String
-  NOMOR_TELEPON    String
-  EMAIL            String
-  ALAMAT           String
-  AKUN             AKUN?    @relation(fields: [ID_AKUN], references: [ID_AKUN])
+model Customer {
+  id       Int    @id @default(autoincrement())
+  akunId   Int?
+  jenis    String
+  nama     String
+  namaInst String
+  noIden   String
+  noTelp   String
+  email    String
+  alamat   String
+
+  Akun      Akun?       @relation(fields: [akunId], references: [id], onDelete: Cascade)
+  Reservasi Reservasi[]
+
+  @@map("CUSTOMER")
 }
 
-model DETAIL_KAMAR {
-  ID_DETAIL_KAMAR  Int    @id
-  ID_KAMAR         Int
-  NOMOR_KAMAR      Int?
-  KAMAR            KAMAR  @relation(fields: [ID_KAMAR], references: [ID_KAMAR])
+model DetailKamar {
+  id      Int  @id @default(autoincrement())
+  kamarId Int
+  noKamar Int?
+
+  Kamar Kamar @relation(fields: [kamarId], references: [id], onDelete: Cascade)
+
+  @@map("DETAIL_KAMAR")
 }
 
-model DETAIL_RESERVASI_FASILITAS {
-  ID_DETAIL_RESERVASI_FASILITAS  Int    @id
-  ID_RESERVASI                   Int
-  ID_FASILITAS                   Int
-  JUMLAH                         Int?
-  TOTAL                          Int?
-  RESERVASI                      RESERVASI  @relation(fields: [ID_RESERVASI], references: [ID_RESERVASI])
-  FASILITAS_TAMBAHAN             FASILITAS_TAMBAHAN @relation(fields: [ID_FASILITAS], references: [ID_FASILITAS])
+model DetailReservasiFasilitas {
+  id          Int  @id @default(autoincrement())
+  reservasiId Int
+  fasilitasId Int
+  jumlah      Int?
+  subtotal    Int?
+
+  Reservasi         Reservasi         @relation(fields: [reservasiId], references: [id], onDelete: Cascade)
+  FasilitasTambahan FasilitasTambahan @relation(fields: [fasilitasId], references: [id], onDelete: Cascade)
+
+  @@map("DETAIL_RESERVASI_FASILITAS")
 }
 
-model DETAIL_RESERVASI_KAMAR {
-  ID_DETAIL_RESERVASI_KAMAR  Int    @id
-  ID_KAMAR                   Int
-  ID_RESERVASI               Int
-  JUMLAH                     Int?
-  TOTAL                      Int?
-  RESERVASI                  RESERVASI  @relation(fields: [ID_RESERVASI], references: [ID_RESERVASI])
-  KAMAR                      KAMAR  @relation(fields: [ID_KAMAR], references: [ID_KAMAR])
+model DetailReservasiKamar {
+  id          Int  @id @default(autoincrement())
+  kamarId     Int
+  reservasiId Int
+  jumlah      Int?
+  subtotal    Int?
+
+  Reservasi Reservasi @relation(fields: [reservasiId], references: [id], onDelete: Cascade)
+  Kamar     Kamar     @relation(fields: [kamarId], references: [id], onDelete: Cascade)
+
+  @@map("DETAIL_RESERVASI_KAMAR")
 }
 
-model FASILITAS_TAMBAHAN {
-  ID_FASILITAS   Int     @id
-  NAMA_FASILITAS String
-  SATUAN         Int?
-  HARGA          Int?
+model FasilitasTambahan {
+  id     Int    @id @default(autoincrement())
+  nama   String
+  satuan Int?
+  harga  Int?
+
+  DetailReservasiFasilitas DetailReservasiFasilitas[]
+
+  @@map("FASILITAS_TAMBAHAN")
 }
 
-model INFORMASI_UMUM {
-  INFORMASI_HOTEL      String
-  INFORMASI_KAMAR      String
-  INFORMASI_FASILITAS  String
+model Kamar {
+  id        Int    @id @default(autoincrement())
+  jenis     String
+  jenisBed  String
+  kapasitas Int?
+  luas      Int?
+  fasilitas String
+  jmlBed    Int?
+
+  DetailKamar          DetailKamar[]
+  DetailReservasiKamar DetailReservasiKamar[]
+  Tarif                Tarif[]
+
+  @@map("KAMAR")
 }
 
-model KAMAR {
-  ID_KAMAR    Int     @id
-  JENIS_KAMAR String
-  JENIS_BED   String
-  KAPASITAS   Int?
-  LUAS        Int?
-  FASILITAS   String?
+model NotaPelunasan {
+  id          Int    @id @default(autoincrement())
+  reservasiId Int
+  noInvoice   String
+  tax         Int?
+  subtotal    Int?
+  jaminan     Int?
+  deposit     Int?
+  cash        Int?
+
+  Reservasi Reservasi @relation(fields: [reservasiId], references: [id], onDelete: Cascade)
+
+  @@map("NOTA_PELUNASAN")
 }
 
-model NOTA_PELUNASAN {
-  ID_NOTA       Int      @id
-  ID_RESERVASI  Int
-  NO_INVOICE    String
-  TAX           Int?
-  TOTAL         Int?
-  JAMINAN       Int?
-  DEPOSIT       Int?
-  CASH          Int?
-  RESERVASI     RESERVASI @relation(fields: [ID_RESERVASI], references: [ID_RESERVASI])
+model Pegawai {
+  id     Int    @id @default(autoincrement())
+  akunId Int?
+  nama   String
+
+  Akun      Akun?       @relation(fields: [akunId], references: [id], onDelete: Cascade)
+  Reservasi Reservasi[]
+
+  @@map("PEGAWAI")
 }
 
-model PEGAWAI {
-  ID_PEGAWAI    Int     @id
-  ID_AKUN       Int?
-  NAMA_PEGAWAI  String
-  AKUN          AKUN?   @relation(fields: [ID_AKUN], references: [ID_AKUN])
+model Reservasi {
+  id               Int      @id @default(autoincrement())
+  pegawaiId        Int?
+  customerId       Int?
+  tanggal          DateTime
+  checkIn          DateTime
+  checkOut         DateTime
+  dewasa           Int?
+  anakAnak         Int?
+  status           Boolean
+  prefix_reservasi String
+
+  Pegawai                  Pegawai?                   @relation(fields: [pegawaiId], references: [id], onDelete: Cascade)
+  Customer                 Customer?                  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  DetailReservasiFasilitas DetailReservasiFasilitas[]
+  DetailReservasiKamar     DetailReservasiKamar[]
+  NotaPelunasan            NotaPelunasan[]
+
+  @@map("RESERVASI")
 }
 
-model RESERVASI {
-  ID_RESERVASI         Int                 @id
-  ID_PEGAWAI           Int?
-  ID_CUSTOMER          Int?
-  ID_NOTA              Int?
-  TANGGAL_RESERVASI    DateTime?
-  CHECK_IN             DateTime?
-  CHECK_OUT            DateTime?
-  DEWASA               Int?
-  ANAK_ANAK            Int?
-  CUSTOMER             CUSTOMER?          @relation(fields: [ID_CUSTOMER], references: [ID_CUSTOMER])
-  NOTA_PELUNASAN       NOTA_PELUNASAN?    @relation(fields: [ID_NOTA], references: [ID_NOTA])
-  PEGAWAI              PEGAWAI?           @relation(fields: [ID_PEGAWAI], references: [ID_PEGAWAI])
+model Role {
+  id   Int    @id @default(autoincrement())
+  nama String
+  Akun Akun[]
+
+  @@map("ROLE")
 }
 
-model ROLE {
-  ID_ROLE    Int     @id
-  NAMA_ROLE  String
+model Season {
+  id             Int      @id @default(autoincrement())
+  jenis          String
+  tanggalAwal    DateTime
+  tanggalAkhir   DateTime
+  perubahanHarga Float
+  Tarif          Tarif[]
+
+  @@map("SEASON")
 }
 
-model SEASON {
-  ID_SEASON       Int      @id
-  JENIS_SEASON    String
-  TANGGAL_AWAL    DateTime?
-  TANGGAL_AKHIR   DateTime?
+model Tarif {
+  id       Int  @id @default(autoincrement())
+  seasonId Int
+  kamarId  Int
+  harga    Int?
+
+  Season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  Kamar  Kamar  @relation(fields: [kamarId], references: [id], onDelete: Cascade)
+
+  @@map("TARIF")
+}
