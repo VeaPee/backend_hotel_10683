@@ -32,9 +32,9 @@ model Customer {
   akunId   Int?
   jenis    String
   nama     String
-  namaInst String
-  noIden   String
-  noTelp   String
+  namaInstitusi String
+  noIdentitas   String
+  noTelpon   String
   email    String
   alamat   String
 
@@ -82,7 +82,7 @@ model DetailReservasiKamar {
 
 model FasilitasTambahan {
   id     Int    @id @default(autoincrement())
-  nama   String
+  nama_fasilitas   String
   satuan Int?
   harga  Int?
 
@@ -93,12 +93,12 @@ model FasilitasTambahan {
 
 model Kamar {
   id        Int    @id @default(autoincrement())
-  jenis     String
+  jenisKamar     String
   jenisBed  String
   kapasitas Int?
   luas      Int?
   fasilitas String
-  jmlBed    Int?
+  jumlahBed    Int?
 
   DetailKamar          DetailKamar[]
   DetailReservasiKamar DetailReservasiKamar[]
@@ -137,12 +137,12 @@ model Reservasi {
   id               Int      @id @default(autoincrement())
   pegawaiId        Int?
   customerId       Int?
-  tanggal          DateTime
+  tanggal_reservasi          DateTime
   checkIn          DateTime
   checkOut         DateTime
-  dewasa           Int?
-  anakAnak         Int?
-  status           Boolean
+  jumlahDewasa           Int?
+  jumlahAnakAnak         Int?
+  status           String
   prefix_reservasi String
 
   Pegawai                  Pegawai?                   @relation(fields: [pegawaiId], references: [id], onDelete: Cascade)
@@ -156,7 +156,7 @@ model Reservasi {
 
 model Role {
   id   Int    @id @default(autoincrement())
-  nama String
+  namaRole String
   Akun Akun[]
 
   @@map("ROLE")
