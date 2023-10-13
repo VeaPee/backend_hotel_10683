@@ -1,6 +1,8 @@
 const Joi = require("joi");
 
 const tarifValidator = Joi.object({
+  seasonId: Joi.number().required(),
+  kamarId: Joi.number().required(),
   harga: Joi.number().required()
 });
 
