@@ -1,36 +1,39 @@
 const jwt = require('jsonwebtoken');
 const httpStatus = require('http-status');
-const Akun = require('@prisma/client').Akun;
+const prisma = require('../prisma/client');
 const Response = require('../model/Response');
 const clearToken = require('../utils/clearToken');
-const tokenRevocation = require('../utils/tokenRevocation');
+// const tokenRevocation = require('../utils/tokenRevocation');
 
 const Auth = async (req, res, next) => {
   try {
+    // await prisma.$connect();
+
     const token = req.headers.authorization;
     const response = new Response.Error(true, 'Unauthorized');
-  
-    if (!token) {
+
+    if (!token || token === '') {
+      const response = new Response.Error(true, 'Unauthorized');
       res.status(httpStatus.UNAUTHORIZED).json(response);
       return;
     }
-  
+
     const myToken = clearToken(token);
-  
-    if (await tokenRevocation.isTokenRevoked(token)) {
-      res.status(httpStatus.UNAUTHORIZED).json(response);
-      return;
-    }
-  
-    jwt.verify(myToken, async (error, payload) => {
+
+    // if (await tokenRevocation.isTokenRevoked(token)) {
+    //   res.status(httpStatus.UNAUTHORIZED).json(response);
+    //   return;
+    // }
+
+    jwt.verify(myToken, process.env.KEY, async (error, payload) => {
       if (error) {
         res.status(httpStatus.UNAUTHORIZED).json(response);
         return;
       }
       
-      const { id } = payload;
-      const akun = await Akun.findOne({ _id: id });
-      req.currentUser = akun;
+      const {id} = payload;
+      const account = await prisma.akun.findUnique({where:{id: id}  });
+      req.currentUser = account;
       next();
     });
   } catch (error) {
@@ -38,5 +41,17 @@ const Auth = async (req, res, next) => {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json(response);
   }
 }
+
+// async function checkRole(req, res, next) {
+//   const accountId = req.currentUser.roleId;
+
+//   if (accountId == 6) {
+//     return res.status(403).json({
+//       message: 'Forbidden',
+//     });
+//   }
+
+//   next();
+// }
 
 module.exports = Auth;

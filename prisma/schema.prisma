@@ -59,7 +59,7 @@ model DetailReservasiFasilitas {
   reservasiId Int
   fasilitasId Int
   jumlah      Int?
-  subtotal    Int?
+  subtotal    Float?
 
   Reservasi         Reservasi         @relation(fields: [reservasiId], references: [id], onDelete: Cascade)
   FasilitasTambahan FasilitasTambahan @relation(fields: [fasilitasId], references: [id], onDelete: Cascade)
@@ -72,7 +72,7 @@ model DetailReservasiKamar {
   kamarId     Int
   reservasiId Int
   jumlah      Int?
-  subtotal    Int?
+  subtotal    Float?
 
   Reservasi Reservasi @relation(fields: [reservasiId], references: [id], onDelete: Cascade)
   Kamar     Kamar     @relation(fields: [kamarId], references: [id], onDelete: Cascade)
@@ -84,7 +84,7 @@ model FasilitasTambahan {
   id     Int    @id @default(autoincrement())
   nama_fasilitas   String
   satuan Int?
-  harga  Int?
+  harga  Float?
 
   DetailReservasiFasilitas DetailReservasiFasilitas[]
 
@@ -111,11 +111,11 @@ model NotaPelunasan {
   id          Int    @id @default(autoincrement())
   reservasiId Int
   no_invoice   String
-  tax         Int?
-  subtotal    Int?
-  jaminan     Int?
-  deposit     Int?
-  cash        Int?
+  tax         Float?
+  subtotal    Float?
+  jaminan     Float?
+  deposit     Float?
+  cash        Float?
 
   Reservasi Reservasi @relation(fields: [reservasiId], references: [id], onDelete: Cascade)
 
@@ -177,7 +177,7 @@ model Tarif {
   id       Int  @id @default(autoincrement())
   seasonId Int
   kamarId  Int
-  harga    Int?
+  harga    Float?
 
   Season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   Kamar  Kamar  @relation(fields: [kamarId], references: [id], onDelete: Cascade)

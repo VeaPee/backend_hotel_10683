@@ -3,19 +3,20 @@ const dotenv = require('dotenv');
 
 const app = express();
 
-// ENDPOINTS
-const akunRoutes = require('./routes/akunRoutes')
-const authRoutes = require('./routes/authRoutes')
-// const customerRoutes = require('./routes/customerRoutes')
-// const fasilitasRoutes = require('./routes/fasilitasRoutes')
-// const kamarRoutes = require('./routes/kamarRoutes')
-// const notaRoutes = require('./routes/notaRoutes')
+// Database & Env
+dotenv.config();
 
 // MIDDLEWARE
 const pageNotFound = require('./utils/pageNotFound');
 
-// Database & Env
-dotenv.config();
+// ENDPOINTS
+const akunRoutes = require('./routes/akunRoutes')
+const authRoutes = require('./routes/authRoutes')
+const customerRoutes = require('./routes/customerRoutes')
+const fasilitasRoutes = require('./routes/fasilitasRoutes')
+const kamarRoutes = require('./routes/kamarRoutes')
+const tarifRoutes = require('./routes/tarifRoutes')
+const seasonRoutes = require('./routes/seasonRoutes')
 
 // PORT AND PATH
 const PORT = process.env.PORT || 6000;
@@ -29,10 +30,11 @@ app.use(express.urlencoded({ extended: true }));
 // ROUTER
 app.use(appendUrl('/akun'), akunRoutes);
 app.use(appendUrl('/auth'), authRoutes);
-// app.use(appendUrl('/customer'), customerRoutes);
-// app.use(appendUrl('/fasilitas'), fasilitasRoutes);
-// app.use(appendUrl('/kamar'), kamarRoutes);
-// app.use(appendUrl('/nota'), notaRoutes);
+app.use(appendUrl('/customer'), customerRoutes);
+app.use(appendUrl('/fasilitas'), fasilitasRoutes);
+app.use(appendUrl('/kamar'), kamarRoutes);
+app.use(appendUrl('/tarif'), tarifRoutes);
+app.use(appendUrl('/season'), seasonRoutes);
 
 // ENDPOINT NOT CREATED
 app.use('/', pageNotFound);

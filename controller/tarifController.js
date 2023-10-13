@@ -1,22 +1,22 @@
 const httpStatus = require("http-status");
 const Response = require("../model/Response");
 const prisma = require("../prisma/client");
-const fasilitasValidator = require("../utils/fasilitasValidator");
+const tarifValidator = require("../utils/tarifValidator");
 
-const getAllFasilitas = async (req, res) => {
+const getAllTarif = async (req, res) => {
   let response = null;
-  const getFasilitasMessage = "Data Fasilitas berhasil diterima";
+  const getTarifMessage = "Data Tarif berhasil diterima";
 
   try {
-    const fasilitas = await prisma.fasilitasTambahan.findMany();
+    const tarif = await prisma.tarif.findMany();
 
-    if (!fasilitas) {
-      const response = new Response.Error(true, "Data Fasilitas Kosong");
+    if (!tarif) {
+      const response = new Response.Error(true, "Data Tarif Kosong");
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
-    response = new Response.Success(true, getFasilitasMessage, fasilitas);
+    response = new Response.Success(true, getTarifMessage, tarif);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     const response = new Response.Error(true, error.message);
@@ -24,25 +24,35 @@ const getAllFasilitas = async (req, res) => {
   }
 };
 
-const getFasilitasByNama = async (req, res) => {
+const getTarifByHarga = async (req, res) => {
   let response = null;
-  try {
-    const nama_fasilitas = req.params.nama_fasilitas;
 
-    const fasilitas = await prisma.fasilitasTambahan.findMany({
+  try {
+    const { min, max } = req.params;
+
+    if (!min || !max) {
+      const response = new Response.Error(true, "Data Tidak Boleh Kosong");
+      res.status(httpStatus.BAD_REQUEST).json(response);
+      return;
+    }
+
+    const tarif = await prisma.tarif.findMany({
       where: {
-        nama_fasilitas: nama_fasilitas,
+        harga: {
+          gte: parseFloat(min),
+          lte: parseFloat(max),
+        },
       },
     });
 
-    if (!fasilitas) {
+    if (!tarif) {
       return res.status(200).json({
         status: "success",
-        message: `Tidak ada data Fasilitas dengan nama ${nama_fasilitas}`,
+        message: `Tidak ada data Tarif dengan range harga ${min} - ${max}`,
       });
     }
 
-    const response = new Response.Success(false, "success", { fasilitas });
+    const response = new Response.Success(false, "success", { tarif });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     response = new Response.Error(true, error.message);
@@ -50,19 +60,19 @@ const getFasilitasByNama = async (req, res) => {
   }
 };
 
-const addFasilitas = async (req, res) => {
+const addTarif = async (req, res) => {
   let response = null;
   try {
-    const addFasilitas = await fasilitasValidator.validateAsync(req.body);
+    const addTarif = await tarifValidator.validateAsync(req.body);
 
-    const fasilitas = await prisma.fasilitasTambahan.create({
-      data: addFasilitas,
+    const tarif = await prisma.tarif.create({
+      data: addTarif,
     });
 
     const response = new Response.Success(
       false,
-      "Fasilitas berhasil dibuat",
-      fasilitas
+      "Tarif berhasil dibuat",
+      tarif
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
@@ -71,36 +81,36 @@ const addFasilitas = async (req, res) => {
   }
 };
 
-const updateFasilitas = async (req, res) => {
+const updateTarif = async (req, res) => {
   let response = null;
 
   try {
     const id = req.params.id;
-    const updatedFasilitas = await fasilitasValidator.validateAsync(req.body);
+    const updatedTarif = await tarifValidator.validateAsync(req.body);
 
-    const fasilitas = await prisma.fasilitasTambahan.findUnique({
+    const tarif = await prisma.tarif.findUnique({
       where: {
         id: parseInt(id),
       },
     });
 
-    if (!fasilitas) {
-      const response = new Response.Error(true, "Data Fasilitas Tidak Ada");
+    if (!tarif) {
+      const response = new Response.Error(true, "Data Tarif Tidak Ada");
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
-    const updated = await prisma.fasilitasTambahan.update({
+    const updated = await prisma.tarif.update({
       where: {
         id: parseInt(id),
       },
 
-      data: updatedFasilitas,
+      data: updatedTarif,
     });
 
     const response = new Response.Success(
       false,
-      "Fasilitas berhasil diperbarui",
+      "Tarif berhasil diperbarui",
       updated
     );
     res.status(httpStatus.OK).json(response);
@@ -110,24 +120,24 @@ const updateFasilitas = async (req, res) => {
   }
 };
 
-const deleteFasilitas = async (req, res) => {
+const deleteTarif = async (req, res) => {
   const id = req.params.id;
   let response = null;
 
   try {
-    const fasilitas = await prisma.fasilitasTambahan.findUnique({
+    const tarif = await prisma.tarif.findUnique({
       where: {
         id: parseInt(id),
       },
     });
 
-    if (!fasilitas) {
-      const response = new Response.Error(true, "Data Fasilitas Tidak Ada");
+    if (!tarif) {
+      const response = new Response.Error(true, "Data Tarif Tidak Ada");
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
-    const deleted = await prisma.fasilitasTambahan.delete({
+    const deleted = await prisma.tarif.delete({
       where: {
         id: parseInt(id),
       },
@@ -135,7 +145,7 @@ const deleteFasilitas = async (req, res) => {
 
     const response = new Response.Success(
       false,
-      "Fasilitas berhasil dihapus",
+      "Tarif berhasil dihapus",
       deleted
     );
     res.status(httpStatus.OK).json(response);
@@ -146,9 +156,9 @@ const deleteFasilitas = async (req, res) => {
 };
 
 module.exports = {
-  getAllFasilitas,
-  getFasilitasByNama,
-  addFasilitas,
-  updateFasilitas,
-  deleteFasilitas,
+  getAllTarif,
+  getTarifByHarga,
+  addTarif,
+  updateTarif,
+  deleteTarif,
 };

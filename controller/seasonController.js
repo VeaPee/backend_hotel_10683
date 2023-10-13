@@ -1,22 +1,22 @@
 const httpStatus = require("http-status");
 const Response = require("../model/Response");
 const prisma = require("../prisma/client");
-const fasilitasValidator = require("../utils/fasilitasValidator");
+const seasonValidator = require("../utils/seasonValidator");
 
-const getAllFasilitas = async (req, res) => {
+const getAllSeason = async (req, res) => {
   let response = null;
-  const getFasilitasMessage = "Data Fasilitas berhasil diterima";
+  const getSeasonMessage = "Data Season berhasil diterima";
 
   try {
-    const fasilitas = await prisma.fasilitasTambahan.findMany();
+    const season = await prisma.season.findMany();
 
-    if (!fasilitas) {
-      const response = new Response.Error(true, "Data Fasilitas Kosong");
+    if (!season) {
+      const response = new Response.Error(true, "Data Season Kosong");
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
-    response = new Response.Success(true, getFasilitasMessage, fasilitas);
+    response = new Response.Success(true, getSeasonMessage, season);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     const response = new Response.Error(true, error.message);
@@ -24,25 +24,26 @@ const getAllFasilitas = async (req, res) => {
   }
 };
 
-const getFasilitasByNama = async (req, res) => {
+const getSeasonByJenis = async (req, res) => {
   let response = null;
-  try {
-    const nama_fasilitas = req.params.nama_fasilitas;
 
-    const fasilitas = await prisma.fasilitasTambahan.findMany({
+  try {
+    const jenisSeason = req.params.jenis_season;
+    
+    const season = await prisma.season.findMany({
       where: {
-        nama_fasilitas: nama_fasilitas,
+        jenisSeason: jenisSeason,
       },
     });
 
-    if (!fasilitas) {
+    if (!season) {
       return res.status(200).json({
         status: "success",
-        message: `Tidak ada data Fasilitas dengan nama ${nama_fasilitas}`,
+        message: `Tidak ada data Season dengan jenis ${jenisSeason}`,
       });
     }
 
-    const response = new Response.Success(false, "success", { fasilitas });
+    const response = new Response.Success(false, "success", { Seasons });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     response = new Response.Error(true, error.message);
@@ -50,57 +51,59 @@ const getFasilitasByNama = async (req, res) => {
   }
 };
 
-const addFasilitas = async (req, res) => {
+const addSeason = async (req, res) => {
   let response = null;
   try {
-    const addFasilitas = await fasilitasValidator.validateAsync(req.body);
-
-    const fasilitas = await prisma.fasilitasTambahan.create({
-      data: addFasilitas,
+    const addSeason = await seasonValidator.validateAsync(req.body);
+    
+    const season = await prisma.season.create({
+      data: addSeason,
     });
 
     const response = new Response.Success(
       false,
-      "Fasilitas berhasil dibuat",
-      fasilitas
+      "Season berhasil dibuat",
+      season
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    console.error(error);
+    const response = new Response.Error(true, error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
 
-const updateFasilitas = async (req, res) => {
+const updateSeason = async (req, res) => {
+  
   let response = null;
 
   try {
     const id = req.params.id;
-    const updatedFasilitas = await fasilitasValidator.validateAsync(req.body);
+    const updatedSeason = await seasonValidator.validateAsync(req.body);
 
-    const fasilitas = await prisma.fasilitasTambahan.findUnique({
+    const season = await prisma.season.findUnique({
       where: {
         id: parseInt(id),
       },
     });
 
-    if (!fasilitas) {
-      const response = new Response.Error(true, "Data Fasilitas Tidak Ada");
+    if (!season) {
+      const response = new Response.Error(true, "Data Season Tidak Ada");
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
-    const updated = await prisma.fasilitasTambahan.update({
+    const updated = await prisma.season.update({
       where: {
         id: parseInt(id),
       },
 
-      data: updatedFasilitas,
+      data: updatedSeason,
     });
 
     const response = new Response.Success(
       false,
-      "Fasilitas berhasil diperbarui",
+      "Season berhasil diperbarui",
       updated
     );
     res.status(httpStatus.OK).json(response);
@@ -110,24 +113,24 @@ const updateFasilitas = async (req, res) => {
   }
 };
 
-const deleteFasilitas = async (req, res) => {
-  const id = req.params.id;
+const deleteSeason = async (req, res) => {
   let response = null;
 
   try {
-    const fasilitas = await prisma.fasilitasTambahan.findUnique({
+    const id = req.params.id;
+    const season = await prisma.season.findUnique({
       where: {
         id: parseInt(id),
       },
     });
 
-    if (!fasilitas) {
-      const response = new Response.Error(true, "Data Fasilitas Tidak Ada");
+    if (!season) {
+      const response = new Response.Error(true, "Data Season Tidak Ada");
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
-    const deleted = await prisma.fasilitasTambahan.delete({
+    const deleted = await prisma.season.delete({
       where: {
         id: parseInt(id),
       },
@@ -135,7 +138,7 @@ const deleteFasilitas = async (req, res) => {
 
     const response = new Response.Success(
       false,
-      "Fasilitas berhasil dihapus",
+      "Season berhasil dihapus",
       deleted
     );
     res.status(httpStatus.OK).json(response);
@@ -146,9 +149,9 @@ const deleteFasilitas = async (req, res) => {
 };
 
 module.exports = {
-  getAllFasilitas,
-  getFasilitasByNama,
-  addFasilitas,
-  updateFasilitas,
-  deleteFasilitas,
+  getAllSeason,
+  getSeasonByJenis,
+  addSeason,
+  updateSeason,
+  deleteSeason,
 };

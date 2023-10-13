@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const Akun = require('@prisma/client').Akun;
 
 const akunValidator = Joi.object({
     username: Joi.string().required(),
