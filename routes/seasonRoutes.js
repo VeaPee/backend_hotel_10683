@@ -6,7 +6,7 @@ const seasonController = require('../controller/seasonController');
 
 router.use(Auth);
 router.get('/getAllSeason', seasonController.getAllSeason);
-router.get('/getSeasonByJenis/:jenisSeason', seasonController.getSeasonByJenis);
+router.get('/getSeasonByJenis/:jenis_season', seasonController.getSeasonByJenis);
 router.post('/addSeason', seasonController.addSeason);
 router.put('/updateSeason/:id', seasonController.updateSeason);
 router.delete('/deleteSeason/:id', seasonController.deleteSeason);

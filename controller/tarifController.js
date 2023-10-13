@@ -10,7 +10,7 @@ const getAllTarif = async (req, res) => {
   try {
     const tarif = await prisma.tarif.findMany();
 
-    if (!tarif) {
+    if (tarif.length === 0) {
       const response = new Response.Error(true, "Data Tarif Kosong");
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
@@ -45,7 +45,7 @@ const getTarifByHarga = async (req, res) => {
       },
     });
 
-    if (!tarif) {
+    if (tarif.length === 0) {
       return res.status(200).json({
         status: "success",
         message: `Tidak ada data Tarif dengan range harga ${min} - ${max}`,

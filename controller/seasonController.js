@@ -10,7 +10,7 @@ const getAllSeason = async (req, res) => {
   try {
     const season = await prisma.season.findMany();
 
-    if (!season) {
+    if (season.length === 0) {
       const response = new Response.Error(true, "Data Season Kosong");
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
@@ -32,18 +32,18 @@ const getSeasonByJenis = async (req, res) => {
     
     const season = await prisma.season.findMany({
       where: {
-        jenisSeason: jenisSeason,
+        jenis_season: jenisSeason,
       },
     });
 
-    if (!season) {
+    if (season.length === 0) {
       return res.status(200).json({
         status: "success",
         message: `Tidak ada data Season dengan jenis ${jenisSeason}`,
       });
     }
 
-    const response = new Response.Success(false, "success", { Seasons });
+    const response = new Response.Success(false, "success", { season });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     response = new Response.Error(true, error.message);

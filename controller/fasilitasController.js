@@ -10,7 +10,7 @@ const getAllFasilitas = async (req, res) => {
   try {
     const fasilitas = await prisma.fasilitasTambahan.findMany();
 
-    if (!fasilitas) {
+    if (fasilitas.length === 0) {
       const response = new Response.Error(true, "Data Fasilitas Kosong");
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
@@ -35,7 +35,7 @@ const getFasilitasByNama = async (req, res) => {
       },
     });
 
-    if (!fasilitas) {
+    if (fasilitas.length === 0) {
       return res.status(200).json({
         status: "success",
         message: `Tidak ada data Fasilitas dengan nama ${nama_fasilitas}`,

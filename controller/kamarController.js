@@ -10,7 +10,7 @@ const getAllKamar = async (req, res) => {
   try {
     const kamar = await prisma.kamar.findMany();
 
-    if (!kamar) {
+    if (kamar.length === 0) {
       const response = new Response.Error(true, "Data Kamar Kosong");
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
@@ -36,7 +36,7 @@ const getKamarByJenis = async (req, res) => {
       },
     });
 
-    if (!kamar) {
+    if (kamar.length === 0) {
       return res.status(200).json({
         status: "success",
         message: `Tidak ada data kamar dengan jenis ${jenisKamar}`,
