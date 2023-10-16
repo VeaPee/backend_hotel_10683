@@ -24,7 +24,77 @@ const getAllTarif = async (req, res) => {
   }
 };
 
+const getTarifByKamar = async (req, res) => {
+  let response = null;
+
+  try {
+    const kamar = req.params.kamarId;
+
+    if (!kamar) {
+      const response = new Response.Error(true, "Data Tidak Boleh Kosong");
+      res.status(httpStatus.BAD_REQUEST).json(response);
+      return;
+    }
+
+    const tarif = await prisma.tarif.findMany({
+      where: {
+        kamarId: parseInt(kamar),
+      },
+    });
+
+    if (tarif.length === 0) {
+      const response = new Response.Success(
+        true,
+        "Tidak ada data Tarif dengan harga tersebut"
+      );
+      res.status(httpStatus.BAD_REQUEST).json(response);
+      return;
+    }
+
+    const response = new Response.Success(false, "success", { tarif });
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
 const getTarifByHarga = async (req, res) => {
+  let response = null;
+
+  try {
+    const harga = req.params.harga;
+
+    if (!harga) {
+      const response = new Response.Error(true, "Data Tidak Boleh Kosong");
+      res.status(httpStatus.BAD_REQUEST).json(response);
+      return;
+    }
+
+    const tarif = await prisma.tarif.findMany({
+      where: {
+        harga: parseFloat(harga),
+      },
+    });
+
+    if (tarif.length === 0) {
+      const response = new Response.Success(
+        true,
+        "Tidak ada data Tarif dengan harga tersebut"
+      );
+      res.status(httpStatus.BAD_REQUEST).json(response);
+      return;
+    }
+
+    const response = new Response.Success(false, "success", { tarif });
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
+const getTarifByRangeHarga = async (req, res) => {
   let response = null;
 
   try {
@@ -46,10 +116,12 @@ const getTarifByHarga = async (req, res) => {
     });
 
     if (tarif.length === 0) {
-      return res.status(200).json({
-        status: "success",
-        message: `Tidak ada data Tarif dengan range harga ${min} - ${max}`,
-      });
+      const response = new Response.Success(
+        true,
+        "Tidak ada data Tarif dengan harga tersebut"
+      );
+      res.status(httpStatus.BAD_REQUEST).json(response);
+      return;
     }
 
     const response = new Response.Success(false, "success", { tarif });
@@ -157,7 +229,9 @@ const deleteTarif = async (req, res) => {
 
 module.exports = {
   getAllTarif,
+  getTarifByKamar,
   getTarifByHarga,
+  getTarifByRangeHarga,
   addTarif,
   updateTarif,
   deleteTarif,
