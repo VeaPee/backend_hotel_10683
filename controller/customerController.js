@@ -22,13 +22,13 @@ const getCustomer = async (req, res) => {
       },
     });
 
-    if(!customer) {
+    if(customer.length === 0) {
       const response = new Response.Error(true, 'Data Kosong');
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
-    response = new Response.Success(true, getCustomerMessage, customer);
+    response = new Response.Success(false, getCustomerMessage, customer);
     res.status(httpStatus.OK).json(response);
 
   } catch (error) {
@@ -44,7 +44,7 @@ const addCustomer = async (req, res) => {
     const accountId = req.currentUser.id;
     const accountRole = req.currentUser.roleId;
 
-    //Check Customer Total Data
+    //Check Customer
     const customerCheck = await prisma.customer.findFirst({
       where: {
         akunId: parseInt(accountId),
@@ -57,10 +57,18 @@ const addCustomer = async (req, res) => {
         res.status(httpStatus.BAD_REQUEST).json(response);
         return;
       }
+      req.body.jenis_customer = "personal";
+    }else if(accountRole === 2){
+      req.body.jenis_customer = "grup";
+    }else{
+        const response = new Response.Error(true, 'Tidak diperbolehkan menambah Data');
+        res.status(httpStatus.BAD_REQUEST).json(response);
+        return;
     }
 
     //Body Request
     req.body.akunId = parseInt(accountId);
+  
 
     const addCustomer = await customerValidator.validateAsync(req.body);
 
@@ -74,7 +82,7 @@ const addCustomer = async (req, res) => {
       data: addCustomer
     })
 
-    const response = new Response.Success(false, 'Customer berhasil dibuat', customer);
+    response = new Response.Success(false, 'Customer berhasil dibuat', customer);
     res.status(httpStatus.OK).json(response);
 
   } catch (error) {
@@ -104,6 +112,13 @@ const updateCustomer = async (req, res) => {
       return;
     }
 
+    //Checking Account
+    if(accountId != customer.akunId){
+      const response = new Response.Error(true, 'Tidak bisa update data');
+      res.status(httpStatus.BAD_REQUEST).json(response);
+      return;
+    }
+
     const updated = await prisma.customer.update({
       where: {
         id: parseInt(id)
@@ -112,7 +127,7 @@ const updateCustomer = async (req, res) => {
       data: updatedCustomer
     })
 
-    const response = new Response.Success(false, 'Customer berhasil diperbarui', updated);
+    response = new Response.Success(false, 'Customer berhasil diperbarui', updated);
     res.status(httpStatus.OK).json(response);
   } catch(error) {
     response = new Response.Error(true, error.message);
@@ -121,8 +136,83 @@ const updateCustomer = async (req, res) => {
 
 }
 
+//Riwayat Reservasi
+
+const getRiwayatTransaksi = async (req, res) => {
+  let response = null;
+  const getRiwayatMessage = 'Data Riwayat berhasil diterima';
+
+  try {
+    const accountId = req.currentUser.id;
+  
+    const customer = await prisma.customer.findFirst({
+      where: {
+        akunId: parseInt(accountId)
+      }
+    })
+
+    if(!customer) {
+      const response = new Response.Error(true, 'Data Customer Tidak Ada');
+      res.status(httpStatus.BAD_REQUEST).json(response);
+      return;
+    }
+  
+    const customerId = customer.id
+  
+    const riwayatTransaksi = await prisma.reservasi.findMany({
+      where: {
+        customerId: customerId
+      },
+      include: {
+        NotaPelunasan: true,
+        DetailReservasiKamar: true,
+        DetailReservasiFasilitas: true
+      }
+    })
+  
+    response = new Response.Success(false, getRiwayatMessage, riwayatTransaksi);
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+}
+
+const getDetailRiwayatTransaksi = async (req, res) => {
+  let response = null;
+  const getRiwayatMessage = 'Data Riwayat berhasil diterima';
+
+  try {
+    const idReservasi = req.params.id
+
+    const detailRiwayatTransaksi = await prisma.reservasi.findFirst({
+      where: {
+        id: parseInt(idReservasi)
+      },
+      include: {
+        NotaPelunasan: true,
+        DetailReservasiKamar: true,
+        DetailReservasiFasilitas: true
+      }
+    })
+
+    if(!detailRiwayatTransaksi) {
+      const response = new Response.Error(true, 'Data Riwayat Transaksi Tidak Ada');
+      res.status(httpStatus.BAD_REQUEST).json(response);
+      return;
+    }
+
+    response = new Response.Success(false, getRiwayatMessage, detailRiwayatTransaksi);
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+}
 module.exports = {
   getCustomer,
   addCustomer,
-  updateCustomer
+  updateCustomer,
+  getRiwayatTransaksi,
+  getDetailRiwayatTransaksi
 }

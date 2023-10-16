@@ -8,4 +8,7 @@ router.get('/getCustomer', customerController.getCustomer);
 router.post('/addCustomer', customerController.addCustomer);
 router.put('/updateCustomer/:id', customerController.updateCustomer);
 
+router.get('/getRiwayatTransaksi', customerController.getRiwayatTransaksi);
+router.get('/getRiwayatTransaksi/:id', customerController.getDetailRiwayatTransaksi);
+
 module.exports = router;
