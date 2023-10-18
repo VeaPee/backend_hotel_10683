@@ -15,7 +15,7 @@ const register = async (req, res) => {
     });
     if (accounts) {
       const response = new Response.Error(true, "Username Sudah Ada");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.OK).json(response);
       return;
     }
 
@@ -72,7 +72,7 @@ const login = async (req, res) => {
     });
     if (!account) {
       response = new Response.Error(true, loginErrorMessage);
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.OK).json(response);
       return;
     }
 
@@ -82,13 +82,14 @@ const login = async (req, res) => {
     );
     if (!isValidPassword) {
       response = new Response.Error(true, loginErrorMessage);
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.OK).json(response);
       return;
     }
 
     const createJwtToken = jwt.sign(
       {
         id: account.id,
+        roleId: account.roleId,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // expires in 24 hours
       },
       process.env.KEY

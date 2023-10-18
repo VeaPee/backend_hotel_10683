@@ -10,6 +10,12 @@ const getAkun = async (req, res) => {
   try {
 
     const account = req.currentUser;
+
+    if (!account) {
+      const response = new Response.Error(true, 'Account not found');
+      return res.status(httpStatus.NOT_FOUND).json(response);
+    }
+    
     const response = new Response.Success(false, 'success', { account });
     res.status(httpStatus.OK).json(response);
   } catch (error) {

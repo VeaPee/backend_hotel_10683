@@ -12,7 +12,7 @@ const getAllTarif = async (req, res) => {
 
     if (tarif.length === 0) {
       const response = new Response.Error(true, "Data Tarif Kosong");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
@@ -32,7 +32,7 @@ const getTarifByKamar = async (req, res) => {
 
     if (!kamar) {
       const response = new Response.Error(true, "Data Tidak Boleh Kosong");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
@@ -67,7 +67,7 @@ const getTarifByHarga = async (req, res) => {
 
     if (!harga) {
       const response = new Response.Error(true, "Data Tidak Boleh Kosong");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.OK).json(response);
       return;
     }
 
@@ -82,7 +82,7 @@ const getTarifByHarga = async (req, res) => {
         true,
         "Tidak ada data Tarif dengan harga tersebut"
       );
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.OK).json(response);
       return;
     }
 
@@ -102,7 +102,7 @@ const getTarifByRangeHarga = async (req, res) => {
 
     if (!min || !max) {
       const response = new Response.Error(true, "Data Tidak Boleh Kosong");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.OK).json(response);
       return;
     }
 
@@ -120,7 +120,7 @@ const getTarifByRangeHarga = async (req, res) => {
         true,
         "Tidak ada data Tarif dengan harga tersebut"
       );
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
@@ -168,7 +168,7 @@ const updateTarif = async (req, res) => {
 
     if (!tarif) {
       const response = new Response.Error(true, "Data Tarif Tidak Ada");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
@@ -205,7 +205,7 @@ const deleteTarif = async (req, res) => {
 
     if (!tarif) {
       const response = new Response.Error(true, "Data Tarif Tidak Ada");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 

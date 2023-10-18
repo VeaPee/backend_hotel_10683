@@ -12,7 +12,7 @@ const getAllFasilitas = async (req, res) => {
 
     if (fasilitas.length === 0) {
       const response = new Response.Error(true, "Data Fasilitas Kosong");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
@@ -86,7 +86,7 @@ const updateFasilitas = async (req, res) => {
 
     if (!fasilitas) {
       const response = new Response.Error(true, "Data Fasilitas Tidak Ada");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
@@ -123,7 +123,7 @@ const deleteFasilitas = async (req, res) => {
 
     if (!fasilitas) {
       const response = new Response.Error(true, "Data Fasilitas Tidak Ada");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 

@@ -12,7 +12,7 @@ const getAllSeason = async (req, res) => {
 
     if (season.length === 0) {
       const response = new Response.Error(true, "Data Season Kosong");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
@@ -89,7 +89,7 @@ const updateSeason = async (req, res) => {
 
     if (!season) {
       const response = new Response.Error(true, "Data Season Tidak Ada");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
@@ -126,7 +126,7 @@ const deleteSeason = async (req, res) => {
 
     if (!season) {
       const response = new Response.Error(true, "Data Season Tidak Ada");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 

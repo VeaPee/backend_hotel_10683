@@ -12,7 +12,7 @@ const getAllKamar = async (req, res) => {
 
     if (kamar.length === 0) {
       const response = new Response.Error(true, "Data Kamar Kosong");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
@@ -87,7 +87,7 @@ const updateKamar = async (req, res) => {
 
     if (!kamar) {
       const response = new Response.Error(true, "Data Kamar Tidak Ada");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
@@ -125,7 +125,7 @@ const deleteKamar = async (req, res) => {
 
     if (!kamar) {
       const response = new Response.Error(true, "Data Kamar Tidak Ada");
-      res.status(httpStatus.BAD_REQUEST).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
