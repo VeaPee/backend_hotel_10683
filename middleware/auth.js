@@ -4,6 +4,7 @@ const prisma = require('../prisma/client');
 const Response = require('../model/Response');
 const clearToken = require('../utils/clearToken');
 // const tokenRevocation = require('../utils/tokenRevocation');
+const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 
 const secretmanagerClient = new SecretManagerServiceClient();
 
