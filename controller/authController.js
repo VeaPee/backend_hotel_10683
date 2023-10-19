@@ -5,6 +5,21 @@ const prisma = require("../prisma/client");
 const akunValidator = require("../utils/akunValidator");
 const loginValidator = require("../utils/loginValidator");
 const bcrypt = require("../utils/bcrypt");
+const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
+
+const secretmanagerClient = new SecretManagerServiceClient();
+
+const callAccessSecretVersion = async () => {
+  // Construct request
+  const request = {
+    name: 'projects/999454011714/secrets/KEY/versions/latest'
+  };
+
+  // Run request
+  const [response] = await secretmanagerClient.accessSecretVersion(request);
+  const secretValue = response.payload.data.toString();
+  return secretValue;
+}
 
 const register = async (req, res) => {
   try {
@@ -92,7 +107,8 @@ const login = async (req, res) => {
         roleId: account.roleId,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // expires in 24 hours
       },
-      process.env.KEY
+      // process.env.KEY
+      await callAccessSecretVersion()
     );
 
     const data = {

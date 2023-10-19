@@ -5,6 +5,20 @@ const Response = require('../model/Response');
 const clearToken = require('../utils/clearToken');
 // const tokenRevocation = require('../utils/tokenRevocation');
 
+const secretmanagerClient = new SecretManagerServiceClient();
+
+const callAccessSecretVersion = async () => {
+  // Construct request
+  const request = {
+    name: 'projects/999454011714/secrets/KEY/versions/latest'
+  };
+
+  // Run request
+  const [response] = await secretmanagerClient.accessSecretVersion(request);
+  const secretValue = response.payload.data.toString();
+  return secretValue;
+}
+
 const Auth = async (req, res, next) => {
   try {
     // await prisma.$connect();
@@ -25,7 +39,10 @@ const Auth = async (req, res, next) => {
     //   return;
     // }
 
-    jwt.verify(myToken, process.env.KEY, async (error, payload) => {
+    jwt.verify(myToken, 
+      // process.env.KEY,
+      await callAccessSecretVersion(), 
+      async (error, payload) => {
       if (error) {
         res.status(httpStatus.UNAUTHORIZED).json(response);
         return;
