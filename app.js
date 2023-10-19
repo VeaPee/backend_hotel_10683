@@ -1,5 +1,6 @@
 const express = require('express')
 const dotenv = require('dotenv');
+const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 
 const app = express();
 
