@@ -14,7 +14,7 @@ steps:
     'initvm'
   ]
   env:
-    - 'SECRET_VALUE=${_SECRET}'
+    - 'MYSQL=${_SECRET}'
 
 # Deploy the application to App Engine
 - name: 'gcr.io/cloud-builders/gcloud'
