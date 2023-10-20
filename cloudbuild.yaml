@@ -1,17 +1,21 @@
 steps:
-# Instalasi dependencies
+# Install dependencies
 - name: 'gcr.io/cloud-builders/npm'
   args: ['install']
 
 # Migrate Prisma
 - name: 'gcr.io/cloud-builders/npm'
   entrypoint: 'npx'
-  args: ['prisma', 'migrate', 'dev', '--name', 'initvm']
+  args: [
+    'prisma',
+    'migrate',
+    'dev',
+    '--name',
+    'initvm',
+    '--url',
+    '${_SECRET}'
+  ]
 
-# Deploy aplikasi ke App Engine
+# Deploy the application to App Engine
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['app', 'deploy']
-
-# Set Environment
-  env:
-      - '_SECRET = _SECRET'
