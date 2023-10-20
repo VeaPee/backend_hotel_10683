@@ -4,7 +4,8 @@ steps:
   args: ['install']
 
 # Migrate Prisma
-- name: 'gcr.io/cloud-builders/npx'
+- name: 'gcr.io/cloud-builders/npm'
+  entrypoint: 'npx'
   args: ['prisma', 'migrate', 'dev', '--name', 'initvm']
 
 # Deploy aplikasi ke App Engine
