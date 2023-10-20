@@ -14,4 +14,4 @@ steps:
 
 # Set Environment
   env:
-      - 'SECRET_VALUE=_SECRET'
+      - '_SECRET = _SECRET'
