@@ -1,13 +1,14 @@
 const express = require('express')
 const dotenv = require('dotenv');
 const callAccessSecretVersionMySQL = require('./prisma/mysql');
-
+const config = require('./config');
 
 const app = express();
 
 // Database & Env
 dotenv.config();
 callAccessSecretVersionMySQL()
+console.log(config.SECRET_VALUE);
 
 // MIDDLEWARE
 const pageNotFound = require('./utils/pageNotFound');
