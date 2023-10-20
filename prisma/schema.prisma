@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output = "@prisma/client"
 }
 
 //Database From Local
@@ -14,7 +15,7 @@ generator client {
 //Database From VM
 datasource db {
   provider = "mysql"
-  url      = "file:./db.js"
+  url      = "file:./mysql.js"
 }
 
 // Model
