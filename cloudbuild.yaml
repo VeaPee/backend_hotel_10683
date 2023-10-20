@@ -5,3 +5,6 @@ steps:
 # Deploy aplikasi ke App Engine
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['app', 'deploy']
+
+- env:
+      - 'SECRET_VALUE=_SECRET'

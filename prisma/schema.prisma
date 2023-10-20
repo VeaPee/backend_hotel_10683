@@ -15,7 +15,7 @@ generator client {
 //Database From VM
 datasource db {
   provider = "mysql"
-  url      = "file:./mysql.js"
+  url      = env("SECRET_VALUE")
 }
 
 // Model
