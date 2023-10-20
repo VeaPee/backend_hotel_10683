@@ -4,7 +4,7 @@ const secretmanagerClient = new SecretManagerServiceClient();
 const callAccessSecretVersionMySQL = async () => {
   // Construct request
   const request = {
-    name: 'projects/999454011714/secrets/MYSQL/versions/latest',
+    name: 'projects/999454011714/secrets/SECRET_VALUE/versions/latest',
   };
 
   // Run request
