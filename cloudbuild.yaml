@@ -3,14 +3,6 @@ steps:
 - name: 'gcr.io/cloud-builders/npm'
   args: ['install']
 
-# Set environment variables
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: 'bash'
-  args:
-    - '-c'
-    - |
-      echo "SECRET_VALUE=${_SECRET}" >> $BUILDER_ENV_FILE
-
 # Migrate Prisma
 - name: 'gcr.io/cloud-builders/npm'
   entrypoint: 'npx'
