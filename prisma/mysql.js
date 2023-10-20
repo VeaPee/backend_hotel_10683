@@ -4,7 +4,7 @@ const secretmanagerClient = new SecretManagerServiceClient();
 const callAccessSecretVersionMySQL = async () => {
   // Construct request
   const request = {
-    name: 'projects/999454011714/secrets/SECRET_VALUE/versions/latest',
+    name: 'projects/999454011714/secrets/MYSQL/versions/latest',
   };
 
   // Run request
@@ -12,7 +12,7 @@ const callAccessSecretVersionMySQL = async () => {
   const secretValue = response.payload.data.toString();
 
   // Set secretValue in the environment
-  process.env.SECRET_VALUE = secretValue;
+  process.env.MYSQL = secretValue;
 
   return secretValue;
 };

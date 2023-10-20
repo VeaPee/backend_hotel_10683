@@ -8,7 +8,7 @@ const app = express();
 // Database & Env
 dotenv.config();
 callAccessSecretVersionMySQL()
-console.log(config.SECRET_VALUE);
+console.log(config.MYSQL);
 
 // MIDDLEWARE
 const pageNotFound = require('./utils/pageNotFound');
