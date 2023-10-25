@@ -24,6 +24,32 @@ const getAllSeason = async (req, res) => {
   }
 };
 
+const getSeasonByID = async (req, res) => {
+  let response = null;
+
+  try {
+    const id = req.params.id;
+
+    const season = await prisma.season.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!season) {
+      const response = new Response.Error(true, "Data Season Tidak Ada");
+      res.status(httpStatus.NOT_FOUND).json(response);
+      return;
+    }
+
+    const response = new Response.Success(false, "success", { season });
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
 const getSeasonByJenis = async (req, res) => {
   let response = null;
 
@@ -150,6 +176,7 @@ const deleteSeason = async (req, res) => {
 
 module.exports = {
   getAllSeason,
+  getSeasonByID,
   getSeasonByJenis,
   addSeason,
   updateSeason,

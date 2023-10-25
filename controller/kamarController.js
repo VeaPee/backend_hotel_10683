@@ -24,6 +24,32 @@ const getAllKamar = async (req, res) => {
   }
 };
 
+const getKamarByID = async (req, res) => {
+  let response = null;
+
+  try {
+    const id = req.params.id;
+
+    const kamar = await prisma.kamar.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!kamar) {
+      const response = new Response.Error(true, "Data Kamar Tidak Ada");
+      res.status(httpStatus.NOT_FOUND).json(response);
+      return;
+    }
+
+    const response = new Response.Success(false, "success", { kamar });
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
 const getKamarByJenis = async (req, res) => {
   let response = null;
 
@@ -149,6 +175,7 @@ const deleteKamar = async (req, res) => {
 
 module.exports = {
   getAllKamar,
+  getKamarByID,
   getKamarByJenis,
   addKamar,
   updateKamar,

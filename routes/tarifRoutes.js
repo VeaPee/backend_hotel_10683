@@ -6,6 +6,7 @@ const tarifController = require('../controller/tarifController');
 
 router.use(Auth);
 router.get('/getAllTarif', tarifController.getAllTarif);
+router.get('/getTarifByID/:id', tarifController.getTarifByID);
 router.get('/getTarifByKamar/:kamarId', tarifController.getTarifByKamar);
 router.get('/getTarifByHarga/:harga', tarifController.getTarifByHarga);
 router.get('/getTarifByRangeHarga/:min/:max', tarifController.getTarifByRangeHarga);

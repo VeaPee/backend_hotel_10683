@@ -24,6 +24,32 @@ const getAllFasilitas = async (req, res) => {
   }
 };
 
+const getFasilitasByID = async (req, res) => {
+  let response = null;
+
+  try {
+    const id = req.params.id;
+
+    const fasilitasTambahan = await prisma.fasilitasTambahan.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!fasilitasTambahan) {
+      const response = new Response.Error(true, "Data Fasilitas Tambahan Tidak Ada");
+      res.status(httpStatus.NOT_FOUND).json(response);
+      return;
+    }
+
+    const response = new Response.Success(false, "success", { fasilitasTambahan });
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
 const getFasilitasByNama = async (req, res) => {
   let response = null;
   try {
@@ -147,6 +173,7 @@ const deleteFasilitas = async (req, res) => {
 
 module.exports = {
   getAllFasilitas,
+  getFasilitasByID,
   getFasilitasByNama,
   addFasilitas,
   updateFasilitas,
