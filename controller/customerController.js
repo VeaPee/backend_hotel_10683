@@ -123,6 +123,28 @@ const updateCustomer = async (req, res) => {
   try{
     const accountId = req.currentUser.id;
     const id = req.params.id
+
+    const customerCheck = await prisma.customer.findFirst({
+      where: {
+        akunId: parseInt(accountId),
+      }
+    });
+    
+    if(accountRole === 6){
+      if(customerCheck) {
+        const response = new Response.Error(true, "error",'Data Customer hanya boleh 1');
+        res.status(httpStatus.BAD_REQUEST).json(response);
+        return;
+      }
+      req.body.jenis_customer = "Personal";
+    }else if(accountRole === 2){
+      req.body.jenis_customer = "Grup";
+    }else{
+        const response = new Response.Error(true, "error",'Tidak diperbolehkan menambah Data');
+        res.status(httpStatus.OK).json(response);
+        return;
+    }
+
     req.body.akunId = parseInt(accountId);
     const updatedCustomer = await customerValidator.validateAsync(req.body);
 
