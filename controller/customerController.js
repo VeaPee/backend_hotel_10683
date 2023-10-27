@@ -64,6 +64,33 @@ const getCustomerByID = async (req, res) => {
   }
 };
 
+//Nyelip, Malas buat baru
+const getPegawaiByID = async (req, res) => {
+  let response = null;
+
+  try {
+    const id = req.params.id;
+
+    const pegawai = await prisma.pegawai.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!pegawai) {
+      const response = new Response.Error(true, "error","Data Pegawai Tidak Ada");
+      res.status(httpStatus.NOT_FOUND).json(response);
+      return;
+    }
+
+    const response = new Response.Success(false, "success", "success", { pegawai });
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, "error",error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
 const addCustomer = async (req, res) => {
   let response = null;
   try {
@@ -246,6 +273,7 @@ const getDetailRiwayatTransaksi = async (req, res) => {
 module.exports = {
   getCustomer,
   getCustomerByID,
+  getPegawaiByID,
   addCustomer,
   updateCustomer,
   getRiwayatTransaksi,
