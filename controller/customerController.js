@@ -38,6 +38,32 @@ const getCustomer = async (req, res) => {
 
 }
 
+const getCustomerByID = async (req, res) => {
+  let response = null;
+
+  try {
+    const id = req.params.id;
+
+    const customer = await prisma.customer.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!customer) {
+      const response = new Response.Error(true, "error","Data Customer Tidak Ada");
+      res.status(httpStatus.NOT_FOUND).json(response);
+      return;
+    }
+
+    const response = new Response.Success(false, "success", "success", { customer });
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, "error",error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
 const addCustomer = async (req, res) => {
   let response = null;
   try {
@@ -211,6 +237,7 @@ const getDetailRiwayatTransaksi = async (req, res) => {
 }
 module.exports = {
   getCustomer,
+  getCustomerByID,
   addCustomer,
   updateCustomer,
   getRiwayatTransaksi,
