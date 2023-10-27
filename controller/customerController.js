@@ -23,16 +23,16 @@ const getCustomer = async (req, res) => {
     });
 
     if(customer.length === 0) {
-      const response = new Response.Error(true, 'Data Kosong');
+      const response = new Response.Error(true, "error", 'Data Kosong');
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    response = new Response.Success(false, getCustomerMessage, customer);
+    response = new Response.Success(false, "success", getCustomerMessage, customer);
     res.status(httpStatus.OK).json(response);
 
   } catch (error) {
-    const response = new Response.Error(true, error.message);
+    const response = new Response.Error(true,"error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 
@@ -53,15 +53,15 @@ const addCustomer = async (req, res) => {
     
     if(accountRole === 6){
       if(customerCheck) {
-        const response = new Response.Error(true, 'Data Customer hanya boleh 1');
-        res.status(httpStatus.OK).json(response);
+        const response = new Response.Error(true, "error",'Data Customer hanya boleh 1');
+        res.status(httpStatus.BAD_REQUEST).json(response);
         return;
       }
       req.body.jenis_customer = "personal";
     }else if(accountRole === 2){
       req.body.jenis_customer = "grup";
     }else{
-        const response = new Response.Error(true, 'Tidak diperbolehkan menambah Data');
+        const response = new Response.Error(true, "error",'Tidak diperbolehkan menambah Data');
         res.status(httpStatus.OK).json(response);
         return;
     }
@@ -73,8 +73,8 @@ const addCustomer = async (req, res) => {
     const addCustomer = await customerValidator.validateAsync(req.body);
 
     if (!accountId) {
-      response = new Response.Error(true, 'accountId is required');
-      res.status(httpStatus.OK).json(response);
+      response = new Response.Error(true, "error",'accountId is required');
+      res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
@@ -82,11 +82,11 @@ const addCustomer = async (req, res) => {
       data: addCustomer
     })
 
-    response = new Response.Success(false, 'Customer berhasil dibuat', customer);
+    response = new Response.Success(false, "success",'Customer berhasil dibuat', customer);
     res.status(httpStatus.OK).json(response);
 
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 }
@@ -107,15 +107,15 @@ const updateCustomer = async (req, res) => {
     })
 
     if(!customer) {
-      const response = new Response.Error(true, 'Data Customer Tidak Ada');
-      res.status(httpStatus.OK).json(response);
+      const response = new Response.Error(true, "error",'Data Customer Tidak Ada');
+      res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
     //Checking Account
     if(accountId != customer.akunId){
-      const response = new Response.Error(true, 'Tidak bisa update data');
-      res.status(httpStatus.OK).json(response);
+      const response = new Response.Error(true, "error",'Tidak bisa update data');
+      res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
@@ -127,10 +127,10 @@ const updateCustomer = async (req, res) => {
       data: updatedCustomer
     })
 
-    response = new Response.Success(false, 'Customer berhasil diperbarui', updated);
+    response = new Response.Success(false, "success",'Customer berhasil diperbarui', updated);
     res.status(httpStatus.OK).json(response);
   } catch(error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 
@@ -152,7 +152,7 @@ const getRiwayatTransaksi = async (req, res) => {
     })
 
     if(!customer) {
-      const response = new Response.Error(true, 'Data Customer Tidak Ada');
+      const response = new Response.Error(true, "error",'Data Customer Tidak Ada');
       res.status(httpStatus.OK).json(response);
       return;
     }
@@ -170,10 +170,10 @@ const getRiwayatTransaksi = async (req, res) => {
       }
     })
   
-    response = new Response.Success(false, getRiwayatMessage, riwayatTransaksi);
+    response = new Response.Success(false, "success", getRiwayatMessage, riwayatTransaksi);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 }
@@ -197,15 +197,15 @@ const getDetailRiwayatTransaksi = async (req, res) => {
     })
 
     if(!detailRiwayatTransaksi) {
-      const response = new Response.Error(true, 'Data Riwayat Transaksi Tidak Ada');
+      const response = new Response.Error(true, "error", 'Data Riwayat Transaksi Tidak Ada');
       res.status(httpStatus.OK).json(response);
       return;
     }
 
-    response = new Response.Success(false, getRiwayatMessage, detailRiwayatTransaksi);
+    response = new Response.Success(false, "success", getRiwayatMessage, detailRiwayatTransaksi);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 }

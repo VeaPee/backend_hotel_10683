@@ -1,13 +1,15 @@
 class Error {
-    constructor(error, message) {
+    constructor(error, status, message) {
       this.error = error;
+      this.status = status;
       this.message = message;
     }
   }
   
   class Success {
-    constructor(error, message, data) {
+    constructor(error, status, message, data) {
       this.error = error;
+      this.status = status;
       this.message = message;
       this.data = data;
     }

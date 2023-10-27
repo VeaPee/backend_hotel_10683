@@ -11,15 +11,15 @@ const getAllTarif = async (req, res) => {
     const tarif = await prisma.tarif.findMany();
 
     if (tarif.length === 0) {
-      const response = new Response.Error(true, "Data Tarif Kosong");
+      const response = new Response.Error(true, "error","Data Tarif Kosong");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    response = new Response.Success(true, getTarifMessage, tarif);
+    response = new Response.Success(true, "success", getTarifMessage, tarif);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    const response = new Response.Error(true, error.message);
+    const response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -37,15 +37,15 @@ const getTarifByID = async (req, res) => {
     });
 
     if (!tarif) {
-      const response = new Response.Error(true, "Data Tarif Tidak Ada");
+      const response = new Response.Error(true, "error","Data Tarif Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    const response = new Response.Success(false, "success", { tarif });
+    const response = new Response.Success(false, "success", "success", { tarif });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -57,7 +57,7 @@ const getTarifByKamar = async (req, res) => {
     const kamar = req.params.kamarId;
 
     if (!kamar) {
-      const response = new Response.Error(true, "Data Tidak Boleh Kosong");
+      const response = new Response.Error(true, "error", "Data Kosong");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
@@ -69,18 +69,19 @@ const getTarifByKamar = async (req, res) => {
     });
 
     if (tarif.length === 0) {
-      const response = new Response.Success(
+      const response = new Response.Error(
         true,
+        "error",
         "Tidak ada data Tarif dengan harga tersebut"
       );
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
-    const response = new Response.Success(false, "success", { tarif });
+    const response = new Response.Success(false, "success", "success", { tarif });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -92,7 +93,7 @@ const getTarifByHarga = async (req, res) => {
     const harga = req.params.harga;
 
     if (!harga) {
-      const response = new Response.Error(true, "Data Tidak Boleh Kosong");
+      const response = new Response.Error(true, "error", "Data Tidak Boleh Kosong");
       res.status(httpStatus.OK).json(response);
       return;
     }
@@ -104,18 +105,19 @@ const getTarifByHarga = async (req, res) => {
     });
 
     if (tarif.length === 0) {
-      const response = new Response.Success(
+      const response = new Response.Error(
         true,
+        "error",
         "Tidak ada data Tarif dengan harga tersebut"
       );
-      res.status(httpStatus.OK).json(response);
+      res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    const response = new Response.Success(false, "success", { tarif });
+    const response = new Response.Success(false, "success","success", { tarif });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -127,8 +129,8 @@ const getTarifByRangeHarga = async (req, res) => {
     const { min, max } = req.params;
 
     if (!min || !max) {
-      const response = new Response.Error(true, "Data Tidak Boleh Kosong");
-      res.status(httpStatus.OK).json(response);
+      const response = new Response.Error(true, "error","Data Tidak Boleh Kosong");
+      res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
@@ -142,18 +144,19 @@ const getTarifByRangeHarga = async (req, res) => {
     });
 
     if (tarif.length === 0) {
-      const response = new Response.Success(
+      const response = new Response.Error(
         true,
+        "error",
         "Tidak ada data Tarif dengan harga tersebut"
       );
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    const response = new Response.Success(false, "success", { tarif });
+    const response = new Response.Success(false, "success","success", { tarif });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -169,12 +172,13 @@ const addTarif = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Tarif berhasil dibuat",
       tarif
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -193,7 +197,7 @@ const updateTarif = async (req, res) => {
     });
 
     if (!tarif) {
-      const response = new Response.Error(true, "Data Tarif Tidak Ada");
+      const response = new Response.Error(true, "error", "Data Tarif Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
@@ -208,12 +212,13 @@ const updateTarif = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Tarif berhasil diperbarui",
       updated
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -230,7 +235,7 @@ const deleteTarif = async (req, res) => {
     });
 
     if (!tarif) {
-      const response = new Response.Error(true, "Data Tarif Tidak Ada");
+      const response = new Response.Error(true, "error","Data Tarif Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
@@ -243,12 +248,13 @@ const deleteTarif = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Tarif berhasil dihapus",
       deleted
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };

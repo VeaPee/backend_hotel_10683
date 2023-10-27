@@ -11,15 +11,15 @@ const getAllFasilitas = async (req, res) => {
     const fasilitas = await prisma.fasilitasTambahan.findMany();
 
     if (fasilitas.length === 0) {
-      const response = new Response.Error(true, "Data Fasilitas Kosong");
+      const response = new Response.Error(true, "error", "Data Fasilitas Kosong");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    response = new Response.Success(true, getFasilitasMessage, fasilitas);
+    response = new Response.Success(true, "success",getFasilitasMessage, fasilitas);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    const response = new Response.Error(true, error.message);
+    const response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -37,15 +37,15 @@ const getFasilitasByID = async (req, res) => {
     });
 
     if (!fasilitasTambahan) {
-      const response = new Response.Error(true, "Data Fasilitas Tambahan Tidak Ada");
+      const response = new Response.Error(true, "error","Data Fasilitas Tambahan Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    const response = new Response.Success(false, "success", { fasilitasTambahan });
+    const response = new Response.Success(false, "success", "success", { fasilitasTambahan });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -71,7 +71,7 @@ const getFasilitasByNama = async (req, res) => {
     const response = new Response.Success(false, "success", { fasilitas });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -87,12 +87,13 @@ const addFasilitas = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Fasilitas berhasil dibuat",
       fasilitas
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -111,7 +112,7 @@ const updateFasilitas = async (req, res) => {
     });
 
     if (!fasilitas) {
-      const response = new Response.Error(true, "Data Fasilitas Tidak Ada");
+      const response = new Response.Error(true, "error", "Data Fasilitas Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
@@ -126,12 +127,13 @@ const updateFasilitas = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Fasilitas berhasil diperbarui",
       updated
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true,"error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -148,7 +150,7 @@ const deleteFasilitas = async (req, res) => {
     });
 
     if (!fasilitas) {
-      const response = new Response.Error(true, "Data Fasilitas Tidak Ada");
+      const response = new Response.Error(true,"error", "Data Fasilitas Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
@@ -161,12 +163,13 @@ const deleteFasilitas = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Fasilitas berhasil dihapus",
       deleted
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true,"error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };

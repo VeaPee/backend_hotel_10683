@@ -29,7 +29,7 @@ const register = async (req, res) => {
       where: { username: request.username },
     });
     if (accounts) {
-      const response = new Response.Error(true, "Username Sudah Ada");
+      const response = new Response.Error(true,"error", "Username Sudah Ada");
       res.status(httpStatus.OK).json(response);
       return;
     }
@@ -54,13 +54,14 @@ const register = async (req, res) => {
     if (!account) {
       // Handle the error here
       console.error("Error creating account:", prisma.$error);
-      const response = new Response.Error(true, "Error creating account");
+      const response = new Response.Error(true,"error", "Error creating account");
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
     const response = new Response.Success(
       false,
+      "success",
       "Akun berhasil dibuat",
       account
     );
@@ -68,7 +69,7 @@ const register = async (req, res) => {
   } catch (error) {
     // Handle the error here
     console.error(error);
-    const response = new Response.Error(true, error.message);
+    const response = new Response.Error(true,"error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   } finally {
     // Disconnect from the database
@@ -86,7 +87,7 @@ const login = async (req, res) => {
       where: { username: request.username },
     });
     if (!account) {
-      response = new Response.Error(true, loginErrorMessage);
+      response = new Response.Error(true,"error", loginErrorMessage);
       res.status(httpStatus.OK).json(response);
       return;
     }
@@ -96,8 +97,8 @@ const login = async (req, res) => {
       account.password
     );
     if (!isValidPassword) {
-      response = new Response.Error(true, loginErrorMessage);
-      res.status(httpStatus.OK).json(response);
+      response = new Response.Error(true, "error",loginErrorMessage);
+      res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
@@ -117,7 +118,7 @@ const login = async (req, res) => {
       password: account.password,
       token: createJwtToken,
     };
-    response = new Response.Success(false, "success", data);
+    response = new Response.Success(false, "success", "success", data);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     response = new Response.Error(true, error.message);

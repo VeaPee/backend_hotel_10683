@@ -11,15 +11,15 @@ const getAllSeason = async (req, res) => {
     const season = await prisma.season.findMany();
 
     if (season.length === 0) {
-      const response = new Response.Error(true, "Data Season Kosong");
+      const response = new Response.Error(true, "error","Data Season Kosong");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    response = new Response.Success(true, getSeasonMessage, season);
+    response = new Response.Success(true,"success", getSeasonMessage, season);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    const response = new Response.Error(true, error.message);
+    const response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -37,15 +37,15 @@ const getSeasonByID = async (req, res) => {
     });
 
     if (!season) {
-      const response = new Response.Error(true, "Data Season Tidak Ada");
+      const response = new Response.Error(true, "error","Data Season Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    const response = new Response.Success(false, "success", { season });
+    const response = new Response.Success(false, "success", "success", { season });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -69,10 +69,10 @@ const getSeasonByJenis = async (req, res) => {
       });
     }
 
-    const response = new Response.Success(false, "success", { season });
+    const response = new Response.Success(false, "success","success", { season });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -88,13 +88,14 @@ const addSeason = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Season berhasil dibuat",
       season
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     console.error(error);
-    const response = new Response.Error(true, error.message);
+    const response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -114,7 +115,7 @@ const updateSeason = async (req, res) => {
     });
 
     if (!season) {
-      const response = new Response.Error(true, "Data Season Tidak Ada");
+      const response = new Response.Error(true, "error", "Data Season Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
@@ -129,12 +130,13 @@ const updateSeason = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Season berhasil diperbarui",
       updated
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -151,7 +153,7 @@ const deleteSeason = async (req, res) => {
     });
 
     if (!season) {
-      const response = new Response.Error(true, "Data Season Tidak Ada");
+      const response = new Response.Error(true, "error","Data Season Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
@@ -164,12 +166,13 @@ const deleteSeason = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Season berhasil dihapus",
       deleted
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };

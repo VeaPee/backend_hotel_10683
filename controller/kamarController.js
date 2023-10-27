@@ -11,15 +11,15 @@ const getAllKamar = async (req, res) => {
     const kamar = await prisma.kamar.findMany();
 
     if (kamar.length === 0) {
-      const response = new Response.Error(true, "Data Kamar Kosong");
+      const response = new Response.Error(true, "error", "Data Kamar Kosong");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    response = new Response.Success(true, getKamarMessage, kamar);
+    response = new Response.Success(true, "success", getKamarMessage, kamar);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    const response = new Response.Error(true, error.message);
+    const response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -37,15 +37,15 @@ const getKamarByID = async (req, res) => {
     });
 
     if (!kamar) {
-      const response = new Response.Error(true, "Data Kamar Tidak Ada");
+      const response = new Response.Error(true, "error", "Data Kamar Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    const response = new Response.Success(false, "success", { kamar });
+    const response = new Response.Success(false, "success", "success", { kamar });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -69,10 +69,10 @@ const getKamarByJenis = async (req, res) => {
       });
     }
 
-    const response = new Response.Success(false, "success", { kamar });
+    const response = new Response.Success(false, "success", "success", { kamar });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -87,13 +87,14 @@ const addKamar = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Kamar berhasil dibuat",
       kamar
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     console.error(error);
-    const response = new Response.Error(true, error.message);
+    const response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -112,7 +113,7 @@ const updateKamar = async (req, res) => {
     });
 
     if (!kamar) {
-      const response = new Response.Error(true, "Data Kamar Tidak Ada");
+      const response = new Response.Error(true, "error", "Data Kamar Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
@@ -127,12 +128,13 @@ const updateKamar = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Kamar berhasil diperbarui",
       updated
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true,"error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -150,7 +152,7 @@ const deleteKamar = async (req, res) => {
     });
 
     if (!kamar) {
-      const response = new Response.Error(true, "Data Kamar Tidak Ada");
+      const response = new Response.Error(true,"error", "Data Kamar Tidak Ada");
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
@@ -163,12 +165,13 @@ const deleteKamar = async (req, res) => {
 
     const response = new Response.Success(
       false,
+      "success",
       "Kamar berhasil dihapus",
       deleted
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, error.message);
+    response = new Response.Error(true, "error",error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };

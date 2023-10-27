@@ -12,7 +12,7 @@ const getAkun = async (req, res) => {
     const account = req.currentUser;
 
     if (!account) {
-      const response = new Response.Error(true, 'Account not found');
+      const response = new Response.Error(true, "error", 'Account not found');
       return res.status(httpStatus.NOT_FOUND).json(response);
     }
     
@@ -35,7 +35,8 @@ const updatePassword = async (req, res) => {
     const isValidPassword = await bcrypt.compare(bodyAccountPassword, accountPassword);
 
     if (!isValidPassword) {
-      throw new Error('Password lama tidak sesuai');
+      response = new Response.Error(true, "error", 'Password lama tidak sesuai');
+      return res.status(httpStatus.BAD_REQUEST).json(response);
     }
 
     const hashedPassword = await bcrypt.hash(request.newPassword);
@@ -45,14 +46,14 @@ const updatePassword = async (req, res) => {
       data: { password: hashedPassword },
     });
 
-    response = new Response.Success(false, 'Password berhasil diubah');
+    response = new Response.Success(false, "success" ,'Password berhasil diubah');
     return res.status(httpStatus.OK).json(response);
   } catch (error) {
     if (error instanceof Error) {
-      response = new Response.Error(true, error.message);
+      response = new Response.Error(true, "error", error.message);
       return res.status(httpStatus.BAD_REQUEST).json(response);
     } else {
-      response = new Response.Error(true, error.message);
+      response = new Response.Error(true, "error", error.message);
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(response);
     }
   }
