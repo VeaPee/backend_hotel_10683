@@ -200,8 +200,7 @@ const getRiwayatTransaksi = async (req, res) => {
       include: {
         NotaPelunasan: true,
         DetailReservasiKamar: true,
-        DetailReservasiFasilitas: true,
-        pegawai: true,
+        DetailReservasiFasilitas: true
       }
     })
   
@@ -227,8 +226,7 @@ const getDetailRiwayatTransaksi = async (req, res) => {
       include: {
         NotaPelunasan: true,
         DetailReservasiKamar: true,
-        DetailReservasiFasilitas: true,
-        pegawai: true,
+        DetailReservasiFasilitas: true
       }
     })
 
