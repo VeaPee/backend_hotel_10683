@@ -35,15 +35,15 @@ model Akun {
 }
 
 model Customer {
-  id       Int    @id @default(autoincrement())
-  akunId   Int?
-  jenis_customer    String
-  nama_customer     String
-  nama_institusi String
-  nomor_identitas   String
+  id              Int    @id @default(autoincrement())
+  akunId          Int?
+  jenis_customer  String
+  nama_customer   String
+  nama_institusi  String
+  nomor_identitas String
   nomor_telepon   String
-  email    String
-  alamat   String
+  email           String
+  alamat          String
 
   Akun      Akun?       @relation(fields: [akunId], references: [id], onDelete: Cascade)
   Reservasi Reservasi[]
@@ -52,8 +52,8 @@ model Customer {
 }
 
 model DetailKamar {
-  id      Int  @id @default(autoincrement())
-  kamarId Int
+  id          Int  @id @default(autoincrement())
+  kamarId     Int
   nomor_kamar Int?
 
   Kamar Kamar @relation(fields: [kamarId], references: [id], onDelete: Cascade)
@@ -62,11 +62,12 @@ model DetailKamar {
 }
 
 model DetailReservasiFasilitas {
-  id          Int  @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   reservasiId Int
   fasilitasId Int
   jumlah      Int?
   subtotal    Float?
+  createdAt   DateTime @default(now())
 
   Reservasi         Reservasi         @relation(fields: [reservasiId], references: [id], onDelete: Cascade)
   FasilitasTambahan FasilitasTambahan @relation(fields: [fasilitasId], references: [id], onDelete: Cascade)
@@ -75,11 +76,12 @@ model DetailReservasiFasilitas {
 }
 
 model DetailReservasiKamar {
-  id          Int  @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   kamarId     Int
   reservasiId Int
   jumlah      Int?
   subtotal    Float?
+  createdAt   DateTime @default(now())
 
   Reservasi Reservasi @relation(fields: [reservasiId], references: [id], onDelete: Cascade)
   Kamar     Kamar     @relation(fields: [kamarId], references: [id], onDelete: Cascade)
@@ -88,10 +90,10 @@ model DetailReservasiKamar {
 }
 
 model FasilitasTambahan {
-  id     Int    @id @default(autoincrement())
-  nama_fasilitas   String
-  satuan Int?
-  harga  Float?
+  id             Int    @id @default(autoincrement())
+  nama_fasilitas String
+  satuan         Int?
+  harga          Float?
 
   DetailReservasiFasilitas DetailReservasiFasilitas[]
 
@@ -99,13 +101,13 @@ model FasilitasTambahan {
 }
 
 model Kamar {
-  id        Int    @id @default(autoincrement())
-  jenisKamar     String
-  jenisBed  String
-  kapasitas Int?
-  luas      Int?
-  fasilitas String
-  jumlah_bed    Int?
+  id         Int    @id @default(autoincrement())
+  jenisKamar String
+  jenisBed   String
+  kapasitas  Int?
+  luas       Int?
+  fasilitas  String
+  jumlah_bed Int?
 
   DetailKamar          DetailKamar[]
   DetailReservasiKamar DetailReservasiKamar[]
@@ -117,7 +119,7 @@ model Kamar {
 model NotaPelunasan {
   id          Int    @id @default(autoincrement())
   reservasiId Int
-  no_invoice   String
+  no_invoice  String
   tax         Float?
   subtotal    Float?
   jaminan     Float?
@@ -141,16 +143,16 @@ model Pegawai {
 }
 
 model Reservasi {
-  id               Int      @id @default(autoincrement())
-  pegawaiId        Int?
-  customerId       Int?
-  tanggal_reservasi          DateTime
+  id                Int      @id @default(autoincrement())
+  pegawaiId         Int?
+  customerId        Int?
+  tanggal_reservasi DateTime
   check_in          DateTime
   check_out         DateTime
-  jumlahDewasa           Int?
-  jumlahAnakAnak         Int?
-  status           String
-  prefix_reservasi String
+  jumlahDewasa      Int?
+  jumlahAnakAnak    Int?
+  status            String
+  prefix_reservasi  String
 
   Pegawai                  Pegawai?                   @relation(fields: [pegawaiId], references: [id], onDelete: Cascade)
   Customer                 Customer?                  @relation(fields: [customerId], references: [id], onDelete: Cascade)
@@ -162,26 +164,26 @@ model Reservasi {
 }
 
 model Role {
-  id   Int    @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   namaRole String
-  Akun Akun[]
+  Akun     Akun[]
 
   @@map("ROLE")
 }
 
 model Season {
-  id             Int      @id @default(autoincrement())
-  jenis_season          String
+  id              Int      @id @default(autoincrement())
+  jenis_season    String
   tanggal_awal    DateTime
   tanggal_akhir   DateTime
   perubahan_harga Float
-  Tarif          Tarif[]
+  Tarif           Tarif[]
 
   @@map("SEASON")
 }
 
 model Tarif {
-  id       Int  @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   seasonId Int
   kamarId  Int
   harga    Float?
