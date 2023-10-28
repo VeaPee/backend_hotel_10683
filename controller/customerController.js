@@ -252,8 +252,16 @@ const getDetailRiwayatTransaksi = async (req, res) => {
       },
       include: {
         NotaPelunasan: true,
-        DetailReservasiKamar: true,
-        DetailReservasiFasilitas: true
+        DetailReservasiKamar: {
+          include: {
+            Kamar: true
+          }
+        },
+        DetailReservasiFasilitas: {
+          include: {
+            FasilitasTambahan: true
+          }
+        },
       }
     })
 
