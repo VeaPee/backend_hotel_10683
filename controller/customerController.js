@@ -244,7 +244,7 @@ const getDetailRiwayatTransaksi = async (req, res) => {
   const getRiwayatMessage = 'Data Riwayat berhasil diterima';
 
   try {
-    const idReservasi = req.params.id
+    const idReservasi = req.params.id;
 
     const detailRiwayatTransaksi = await prisma.reservasi.findFirst({
       where: {
@@ -254,18 +254,22 @@ const getDetailRiwayatTransaksi = async (req, res) => {
         NotaPelunasan: true,
         DetailReservasiKamar: {
           include: {
-            Kamar: true
+            Kamar: {
+              include: {
+                Tarif: true
+              }
+            }
           }
         },
         DetailReservasiFasilitas: {
           include: {
             FasilitasTambahan: true
           }
-        },
+        }
       }
-    })
+    });
 
-    if(!detailRiwayatTransaksi) {
+    if (!detailRiwayatTransaksi) {
       const response = new Response.Error(true, "error", 'Data Riwayat Transaksi Tidak Ada');
       res.status(httpStatus.OK).json(response);
       return;
@@ -274,10 +278,10 @@ const getDetailRiwayatTransaksi = async (req, res) => {
     response = new Response.Success(false, "success", getRiwayatMessage, detailRiwayatTransaksi);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, "error",error.message);
+    response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
-}
+};
 module.exports = {
   getCustomer,
   getCustomerByID,
