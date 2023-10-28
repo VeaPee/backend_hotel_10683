@@ -41,6 +41,7 @@ CREATE TABLE `DETAIL_RESERVASI_FASILITAS` (
     `fasilitasId` INTEGER NOT NULL,
     `jumlah` INTEGER NULL,
     `subtotal` INTEGER NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -52,7 +53,8 @@ CREATE TABLE `DETAIL_RESERVASI_KAMAR` (
     `reservasiId` INTEGER NOT NULL,
     `jumlah` INTEGER NULL,
     `subtotal` INTEGER NULL,
-
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
