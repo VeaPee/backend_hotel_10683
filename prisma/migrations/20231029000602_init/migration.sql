@@ -40,7 +40,8 @@ CREATE TABLE `DETAIL_RESERVASI_FASILITAS` (
     `reservasiId` INTEGER NOT NULL,
     `fasilitasId` INTEGER NOT NULL,
     `jumlah` INTEGER NULL,
-    `subtotal` INTEGER NULL,
+    `subtotal` DOUBLE NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -51,7 +52,8 @@ CREATE TABLE `DETAIL_RESERVASI_KAMAR` (
     `kamarId` INTEGER NOT NULL,
     `reservasiId` INTEGER NOT NULL,
     `jumlah` INTEGER NULL,
-    `subtotal` INTEGER NULL,
+    `subtotal` DOUBLE NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -61,7 +63,7 @@ CREATE TABLE `FASILITAS_TAMBAHAN` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nama_fasilitas` VARCHAR(191) NOT NULL,
     `satuan` INTEGER NULL,
-    `harga` INTEGER NULL,
+    `harga` DOUBLE NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -84,11 +86,11 @@ CREATE TABLE `NOTA_PELUNASAN` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `reservasiId` INTEGER NOT NULL,
     `no_invoice` VARCHAR(191) NOT NULL,
-    `tax` INTEGER NULL,
-    `subtotal` INTEGER NULL,
-    `jaminan` INTEGER NULL,
-    `deposit` INTEGER NULL,
-    `cash` INTEGER NULL,
+    `tax` DOUBLE NULL,
+    `subtotal` DOUBLE NULL,
+    `jaminan` DOUBLE NULL,
+    `deposit` DOUBLE NULL,
+    `cash` DOUBLE NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -142,7 +144,7 @@ CREATE TABLE `TARIF` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `seasonId` INTEGER NOT NULL,
     `kamarId` INTEGER NOT NULL,
-    `harga` INTEGER NULL,
+    `harga` DOUBLE NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
