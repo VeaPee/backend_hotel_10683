@@ -129,19 +129,7 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
   try {
     // Extract the JWT token from the request headers
-    const token = req.headers.authorization.split("Bearer ")[1];
-
-    // Decode the JWT token to get the user ID
-    const decoded = jwt.verify(token, await callAccessSecretVersion());
-    const id = decoded.id;
-
-    // Invalidate the JWT token by removing it from the database
-    await prisma.invalidToken.create({
-      data: {
-        id: id,
-        token: token,
-      },
-    });
+    // const token = req.headers.authorization.split("Bearer ")[1];
 
     const response = new Response.Success(
       false,
@@ -151,7 +139,7 @@ const logout = async (req, res) => {
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     console.error(error);
-    const response = new Response.Error(true, "error","error", error.message);
+    const response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   } finally {
     // Disconnect from the database
