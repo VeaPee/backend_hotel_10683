@@ -51,16 +51,6 @@ model Customer {
   @@map("CUSTOMER")
 }
 
-model DetailKamar {
-  id          Int  @id @default(autoincrement())
-  kamarId     Int
-  nomor_kamar Int?
-
-  Kamar Kamar @relation(fields: [kamarId], references: [id], onDelete: Cascade)
-
-  @@map("DETAIL_KAMAR")
-}
-
 model DetailReservasiFasilitas {
   id          Int      @id @default(autoincrement())
   reservasiId Int
@@ -108,8 +98,8 @@ model Kamar {
   luas       Int?
   fasilitas  String
   jumlah_bed Int?
+  nomor_kamar String?
 
-  DetailKamar          DetailKamar[]
   DetailReservasiKamar DetailReservasiKamar[]
   Tarif                Tarif[]
 
