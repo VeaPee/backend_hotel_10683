@@ -1,13 +1,14 @@
 const express = require('express')
 const dotenv = require('dotenv');
-const callAccessSecretVersionMySQL = require('./prisma/mysql');
+// const callAccessSecretVersionMySQL = require('./prisma/mysql');
 const config = require('./config');
+const cors = require('cors');
 
 const app = express();
 
 // Database & Env
 dotenv.config();
-callAccessSecretVersionMySQL()
+// callAccessSecretVersionMySQL()
 console.log(config.MYSQL);
 
 // MIDDLEWARE
@@ -30,21 +31,21 @@ const appendUrl = (url) => `${VERSION_API}${url}`;
 // MIDDLEWARE
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+// app.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//   if (req.method === 'OPTIONS') {
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//     res.status(200).end();
+//     return;
+//   }
 
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.status(200).end();
-    return;
-  }
-
-  next();
-});
+//   next();
+// });
 
 // ROUTER
 app.use(appendUrl('/akun'), akunRoutes);

@@ -42,7 +42,7 @@ const Auth = async (req, res, next) => {
 
     jwt.verify(myToken, 
       // process.env.KEY,
-      await callAccessSecretVersion(), 
+      await callAccessSecretVersion, 
       async (error, payload) => {
       if (error) {
         res.status(httpStatus.UNAUTHORIZED).json(response);

@@ -7,7 +7,7 @@ const kamarValidator = Joi.object({
     luas: Joi.number().required(),
     fasilitas: Joi.string().required(),
     jumlah_bed: Joi.number().required(),
-    nomor_kamar: Joi.string().unique().required()
+    nomor_kamar: Joi.string().required()
   });
   
   module.exports = kamarValidator;

@@ -109,7 +109,8 @@ const login = async (req, res) => {
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // expires in 24 hours
       },
       // process.env.KEY
-      await callAccessSecretVersion()
+      await callAccessSecretVersion
+      ()
     );
 
     const data = {

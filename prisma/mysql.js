@@ -1,20 +1,20 @@
-const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
-const secretmanagerClient = new SecretManagerServiceClient();
+// const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
+// const secretmanagerClient = new SecretManagerServiceClient();
 
-const callAccessSecretVersionMySQL = async () => {
-  // Construct request
-  const request = {
-    name: 'projects/999454011714/secrets/MYSQL/versions/latest',
-  };
+// const callAccessSecretVersionMySQL = async () => {
+//   // Construct request
+//   const request = {
+//     name: 'projects/999454011714/secrets/MYSQL/versions/latest',
+//   };
 
-  // Run request
-  const [response] = await secretmanagerClient.accessSecretVersion(request);
-  const secretValue = response.payload.data.toString();
+//   // Run request
+//   const [response] = await secretmanagerClient.accessSecretVersion(request);
+//   const secretValue = response.payload.data.toString();
 
-  // Set secretValue in the environment
-  process.env.MYSQL = secretValue;
+//   // Set secretValue in the environment
+//   process.env.MYSQL = secretValue;
 
-  return secretValue;
-};
+//   return secretValue;
+// };
 
-module.exports = callAccessSecretVersionMySQL;
+// module.exports = callAccessSecretVersionMySQL;
