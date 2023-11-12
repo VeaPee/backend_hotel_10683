@@ -68,7 +68,7 @@ CREATE TABLE `KAMAR` (
     `luas` INTEGER NULL,
     `fasilitas` VARCHAR(191) NOT NULL,
     `jumlah_bed` INTEGER NULL,
-    `nomor_kamar` VARCHAR(191) NULL,
+    `nomor_kamar` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

@@ -113,6 +113,20 @@ const addKamar = async (req, res) => {
   let response = null;
   try {
     const addKamar = await kamarValidator.validateAsync(req.body);
+
+    const findKamar = await prisma.kamar.findFirst({
+      where: {
+        nomor_kamar: parseInt(addKamar.nomor_kamar)
+      }
+    })
+
+    if(findKamar) {
+      return res.status(400).json({
+        status: 'error',
+        message: `Kamar nomor ${addKamar.nomor_kamar} sudah ada`
+      })
+    }
+
     const kamar = await prisma.kamar.create({
       data: addKamar,
     });
@@ -137,6 +151,19 @@ const updateKamar = async (req, res) => {
   try {
     const id = req.params.id;
     const updatedKamar = await kamarValidator.validateAsync(req.body);
+
+    const findKamar = await prisma.kamar.findFirst({
+      where: {
+        nomor_kamar: parseInt(updatedKamar.nomor_kamar)
+      }
+    })
+
+    if(findKamar) {
+      return res.status(400).json({
+        status: 'error',
+        message: `Kamar nomor ${updatedKamar.nomor_kamar} sudah ada`
+      })
+    }
 
     const kamar = await prisma.kamar.findUnique({
       where: {
@@ -227,26 +254,27 @@ const checkKamarAvailability = async (req, res) => {
 
     const kamarReserved = await prisma.DetailReservasiKamar.findMany({
       where: {
-        OR: [
+        AND: [
           {
-            // (check_in <= tanggalAwal && tanggalAwal < check_out)
             Reservasi: {
-              check_in: { lte: tanggalAwal },
-              check_out: { gte: tanggalAwal },
-            },
-          },
-          {
-            // (check_in < tanggalAkhir && dto.tanggalAkhir <= check_out)
-            Reservasi: {
-              check_in: { lte: tanggalAkhir },
-              check_out: { gte: tanggalAkhir },
-            },
-          },
-          {
-            // (tanggalAwal <= check_in && tanggalAkhir >= check_out)
-            Reservasi: {
-              check_in: { gte: tanggalAwal },
-              check_out: { lte: tanggalAkhir },
+              status: "Sudah Dibayar",
+              // (check_in <= tanggalAwal && tanggalAwal < check_out)
+              OR: [
+                {
+                  check_in: { lte: tanggalAwal },
+                  check_out: { gte: tanggalAwal },
+                },
+                // (check_in < tanggalAkhir && dto.tanggalAkhir <= check_out)
+                {
+                  check_in: { lte: tanggalAkhir },
+                  check_out: { gte: tanggalAkhir },
+                },
+                // (tanggalAwal <= check_in && tanggalAkhir >= check_out)
+                {
+                  check_in: { gte: tanggalAwal },
+                  check_out: { lte: tanggalAkhir },
+                },
+              ],
             },
           },
         ],
@@ -255,6 +283,7 @@ const checkKamarAvailability = async (req, res) => {
         kamarId: true,
       },
     });
+    
 
     const kamarReservedIds = kamarReserved.map((kamar) => kamar.kamarId);
 

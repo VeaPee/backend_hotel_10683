@@ -161,7 +161,7 @@ const konfirmasiPembayaran = async (req, res) => {
 
     const idReservasi = status.id;
 
-    const jaminan = await prisma.notaPelunasan.findUnique({
+    const jaminan = await prisma.notaPelunasan.findFirst({
       where: {
         reservasiId: parseInt(idReservasi),
       },
@@ -179,7 +179,7 @@ const konfirmasiPembayaran = async (req, res) => {
 
     const idNota = jaminan.id;
 
-    const updated = await prisma.notaPelunasan.update({
+    const nota = await prisma.notaPelunasan.create({
       where: {
         id: parseInt(idNota),
       },
@@ -194,15 +194,8 @@ const konfirmasiPembayaran = async (req, res) => {
         id: parseInt(id),
       },
 
-      data: statusValid,
+      data: { status: statusValid },
     });
-
-    const response = new Response.Success(
-      false,
-      "success",
-      "Jaminan berhasil ditambahkan",
-      updated
-    );
 
     const responseStatus = new Response.Success(
       false,
@@ -211,7 +204,7 @@ const konfirmasiPembayaran = async (req, res) => {
       updatedStatus
     );
 
-    res.status(httpStatus.OK).json(response);
+    res.status(httpStatus.OK).json(responseStatus);
   } catch (error) {
     response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
@@ -257,7 +250,7 @@ const pembatalanReservasi = async (req, res) => {
       return;
     }
 
-    const deleted = await prisma.reservasi.delete({
+    const updateStatus = await prisma.reservasi.update({
       where: {
         id: parseInt(id),
       },
@@ -267,29 +260,29 @@ const pembatalanReservasi = async (req, res) => {
       },
     });
 
-    // Delete related records from detailReservasiFasilitas table
-    for (const detailFasilitas of deleted.detailReservasiFasilitas) {
-      await prisma.detailReservasiFasilitas.delete({
-        where: {
-          id: detailFasilitas.id,
-        },
-      });
-    }
+    // // Delete related records from detailReservasiFasilitas table
+    // for (const detailFasilitas of deleted.detailReservasiFasilitas) {
+    //   await prisma.detailReservasiFasilitas.delete({
+    //     where: {
+    //       id: detailFasilitas.id,
+    //     },
+    //   });
+    // }
 
-    // Delete related records from detailReservasiKamar table
-    for (const detailKamar of deleted.detailReservasiKamar) {
-      await prisma.detailReservasiKamar.delete({
-        where: {
-          id: detailKamar.id,
-        },
-      });
-    }
+    // // Delete related records from detailReservasiKamar table
+    // for (const detailKamar of deleted.detailReservasiKamar) {
+    //   await prisma.detailReservasiKamar.delete({
+    //     where: {
+    //       id: detailKamar.id,
+    //     },
+    //   });
+    // }
 
     const response = new Response.Success(
       false,
       "success",
       "Reservasi berhasil dibatalkan",
-      deleted
+      updateStatus
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {

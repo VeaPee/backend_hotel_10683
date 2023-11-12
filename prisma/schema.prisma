@@ -98,7 +98,7 @@ model Kamar {
   luas        Int?
   fasilitas   String
   jumlah_bed  Int?
-  nomor_kamar String?
+  nomor_kamar Int?
 
   DetailReservasiKamar DetailReservasiKamar[]
   Tarif                Tarif[]
