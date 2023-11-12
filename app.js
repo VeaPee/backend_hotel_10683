@@ -22,6 +22,7 @@ const fasilitasRoutes = require('./routes/fasilitasRoutes')
 const kamarRoutes = require('./routes/kamarRoutes')
 const tarifRoutes = require('./routes/tarifRoutes')
 const seasonRoutes = require('./routes/seasonRoutes')
+const transaksiRoutes = require('./routes/transaksiRoutes')
 
 // PORT AND PATH
 const PORT = process.env.PORT || 6000;
@@ -55,6 +56,7 @@ app.use(appendUrl('/fasilitas'), fasilitasRoutes);
 app.use(appendUrl('/kamar'), kamarRoutes);
 app.use(appendUrl('/tarif'), tarifRoutes);
 app.use(appendUrl('/season'), seasonRoutes);
+app.use(appendUrl('/transaksi'), transaksiRoutes);
 
 // ENDPOINT NOT CREATED
 app.use('/', pageNotFound);

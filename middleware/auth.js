@@ -4,21 +4,21 @@ const prisma = require('../prisma/client');
 const Response = require('../model/Response');
 const clearToken = require('../utils/clearToken');
 // const tokenRevocation = require('../utils/tokenRevocation');
-const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
+// const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 
-const secretmanagerClient = new SecretManagerServiceClient();
+// const secretmanagerClient = new SecretManagerServiceClient();
 
-const callAccessSecretVersion = async () => {
-  // Construct request
-  const request = {
-    name: 'projects/999454011714/secrets/KEY/versions/latest'
-  };
+// const callAccessSecretVersion = async () => {
+//   // Construct request
+//   const request = {
+//     name: 'projects/999454011714/secrets/KEY/versions/latest'
+//   };
 
-  // Run request
-  const [response] = await secretmanagerClient.accessSecretVersion(request);
-  const secretValue = response.payload.data.toString();
-  return secretValue;
-}
+//   // Run request
+//   const [response] = await secretmanagerClient.accessSecretVersion(request);
+//   const secretValue = response.payload.data.toString();
+//   return secretValue;
+// }
 
 const Auth = async (req, res, next) => {
   try {
@@ -41,8 +41,8 @@ const Auth = async (req, res, next) => {
     // }
 
     jwt.verify(myToken, 
-      // process.env.KEY,
-      await callAccessSecretVersion, 
+      await process.env.KEY,
+      // await callAccessSecretVersion, 
       async (error, payload) => {
       if (error) {
         res.status(httpStatus.UNAUTHORIZED).json(response);

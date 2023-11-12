@@ -12,4 +12,6 @@ router.post('/addKamar', kamarController.addKamar);
 router.put('/updateKamar/:id', kamarController.updateKamar);
 router.delete('/deleteKamar/:id', kamarController.deleteKamar);
 
+router.post('/checkKamarAvailability', kamarController.checkKamarAvailability);
+
 module.exports = router;

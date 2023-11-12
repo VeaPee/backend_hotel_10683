@@ -2,13 +2,22 @@ const httpStatus = require("http-status");
 const Response = require("../model/Response");
 const prisma = require("../prisma/client");
 const kamarValidator = require("../utils/kamarValidator");
+const availabilityValidator = require("../utils/availabilityValidator");
 
 const getAllKamar = async (req, res) => {
   let response = null;
   const getKamarMessage = "Data Kamar berhasil diterima";
 
   try {
-    const kamar = await prisma.kamar.findMany();
+    const kamar = await prisma.kamar.findMany({
+      include: {
+        Tarif: {
+          include: {
+            Season: true
+          }
+        },
+      }
+    });
 
     if (kamar.length === 0) {
       const response = new Response.Error(true, "error", "Data Kamar Kosong");
@@ -34,18 +43,32 @@ const getKamarByID = async (req, res) => {
       where: {
         id: parseInt(id),
       },
+      include: {
+        Tarif: {
+          include: {
+            Season: true
+          }
+        },
+      }
+
     });
 
     if (!kamar) {
-      const response = new Response.Error(true, "error", "Data Kamar Tidak Ada");
+      const response = new Response.Error(
+        true,
+        "error",
+        "Data Kamar Tidak Ada"
+      );
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
 
-    const response = new Response.Success(false, "success", "success", { kamar });
+    const response = new Response.Success(false, "success", "success", {
+      kamar,
+    });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, "error",error.message);
+    response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -60,6 +83,13 @@ const getKamarByJenis = async (req, res) => {
       where: {
         jenisKamar: jenisKamar,
       },
+      include: {
+        Tarif: {
+          include: {
+            Season: true
+          }
+        },
+      }
     });
 
     if (kamar.length === 0) {
@@ -69,7 +99,9 @@ const getKamarByJenis = async (req, res) => {
       });
     }
 
-    const response = new Response.Success(false, "success", "success", { kamar });
+    const response = new Response.Success(false, "success", "success", {
+      kamar,
+    });
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     response = new Response.Error(true, "error", error.message);
@@ -94,7 +126,7 @@ const addKamar = async (req, res) => {
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     console.error(error);
-    const response = new Response.Error(true, "error",error.message);
+    const response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -113,7 +145,11 @@ const updateKamar = async (req, res) => {
     });
 
     if (!kamar) {
-      const response = new Response.Error(true, "error", "Data Kamar Tidak Ada");
+      const response = new Response.Error(
+        true,
+        "error",
+        "Data Kamar Tidak Ada"
+      );
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
@@ -134,7 +170,7 @@ const updateKamar = async (req, res) => {
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true,"error", error.message);
+    response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -152,7 +188,11 @@ const deleteKamar = async (req, res) => {
     });
 
     if (!kamar) {
-      const response = new Response.Error(true,"error", "Data Kamar Tidak Ada");
+      const response = new Response.Error(
+        true,
+        "error",
+        "Data Kamar Tidak Ada"
+      );
       res.status(httpStatus.NOT_FOUND).json(response);
       return;
     }
@@ -171,7 +211,83 @@ const deleteKamar = async (req, res) => {
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
-    response = new Response.Error(true, "error",error.message);
+    response = new Response.Error(true, "error", error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
+const checkKamarAvailability = async (req, res) => {
+  let response = null;
+
+  try {
+    await availabilityValidator.validateAsync(req.body);
+
+    const tanggalAwal = new Date(req.body.tanggalAwal).toISOString();
+    const tanggalAkhir = new Date(req.body.tanggalAkhir).toISOString();
+
+    const kamarReserved = await prisma.DetailReservasiKamar.findMany({
+      where: {
+        OR: [
+          {
+            // (check_in <= tanggalAwal && tanggalAwal < check_out)
+            Reservasi: {
+              check_in: { lte: tanggalAwal },
+              check_out: { gte: tanggalAwal },
+            },
+          },
+          {
+            // (check_in < tanggalAkhir && dto.tanggalAkhir <= check_out)
+            Reservasi: {
+              check_in: { lte: tanggalAkhir },
+              check_out: { gte: tanggalAkhir },
+            },
+          },
+          {
+            // (tanggalAwal <= check_in && tanggalAkhir >= check_out)
+            Reservasi: {
+              check_in: { gte: tanggalAwal },
+              check_out: { lte: tanggalAkhir },
+            },
+          },
+        ],
+      },
+      select: {
+        kamarId: true,
+      },
+    });
+
+    const kamarReservedIds = kamarReserved.map((kamar) => kamar.kamarId);
+
+    const kamarAvailable = await prisma.Kamar.findMany({
+      where: {
+        NOT: {
+          id: {
+            in: kamarReservedIds,
+          },
+        },
+      },
+      include: {
+        Tarif: {
+          include: {
+            Season: true
+          }
+        },
+      }
+    });
+
+    if (kamarAvailable.length === 0) {
+      return res.status(404).json({
+        status: "success",
+        message: `Tidak ada data kamar tersedia`,
+      });
+    }
+
+    const response = new Response.Success(false, "success", "success", {
+      kamar: kamarAvailable,
+    });
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
@@ -183,4 +299,5 @@ module.exports = {
   addKamar,
   updateKamar,
   deleteKamar,
+  checkKamarAvailability,
 };

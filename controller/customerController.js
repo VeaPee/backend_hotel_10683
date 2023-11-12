@@ -11,8 +11,8 @@ const getCustomer = async (req, res) => {
     const accountId = req.currentUser.id;
 
     if (accountId === null) {
-      response = new Response.Error(true, 'accountId is required');
-      res.status(httpStatus.OK).json(response);
+      response = new Response.Error(true, "error", 'accountId is required');
+      res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
     
@@ -110,9 +110,9 @@ const addCustomer = async (req, res) => {
         res.status(httpStatus.BAD_REQUEST).json(response);
         return;
       }
-      req.body.jenis_customer = "personal";
+      req.body.jenis_customer = "Personal";
     }else if(accountRole === 2){
-      req.body.jenis_customer = "grup";
+      req.body.jenis_customer = "Grup";
     }else{
         const response = new Response.Error(true, "error",'Tidak diperbolehkan menambah Data');
         res.status(httpStatus.OK).json(response);
@@ -256,7 +256,11 @@ const getDetailRiwayatTransaksi = async (req, res) => {
           include: {
             Kamar: {
               include: {
-                Tarif: true
+                Tarif: {
+                  include: {
+                    Season: true
+                  }
+                }
               }
             }
           }
