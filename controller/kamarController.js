@@ -3,6 +3,7 @@ const Response = require("../model/Response");
 const prisma = require("../prisma/client");
 const kamarValidator = require("../utils/kamarValidator");
 const availabilityValidator = require("../utils/availabilityValidator");
+const detailKamarValidator = require("../utils/detailKamarValidator");
 
 const getAllKamar = async (req, res) => {
   let response = null;
@@ -11,12 +12,38 @@ const getAllKamar = async (req, res) => {
   try {
     const kamar = await prisma.kamar.findMany({
       include: {
+        DetailKamar: true,
         Tarif: {
           include: {
-            Season: true
-          }
+            Season: true,
+          },
         },
-      }
+      },
+    });
+
+    if (kamar.length === 0) {
+      const response = new Response.Error(true, "error", "Data Kamar Kosong");
+      res.status(httpStatus.NOT_FOUND).json(response);
+      return;
+    }
+
+    response = new Response.Success(true, "success", getKamarMessage, kamar);
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    const response = new Response.Error(true, "error", error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
+const getAllNomorKamar = async (req, res) => {
+  let response = null;
+  const getKamarMessage = "Data Kamar berhasil diterima";
+
+  try {
+    const kamar = await prisma.detailKamar.findMany({
+      include: {
+        Kamar: true,
+      },
     });
 
     if (kamar.length === 0) {
@@ -44,13 +71,48 @@ const getKamarByID = async (req, res) => {
         id: parseInt(id),
       },
       include: {
+        DetailKamar: true,
         Tarif: {
           include: {
-            Season: true
-          }
+            Season: true,
+          },
         },
-      }
+      },
+    });
 
+    if (!kamar) {
+      const response = new Response.Error(
+        true,
+        "error",
+        "Data Kamar Tidak Ada"
+      );
+      res.status(httpStatus.NOT_FOUND).json(response);
+      return;
+    }
+
+    const response = new Response.Success(false, "success", "success", {
+      kamar,
+    });
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, "error", error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
+const getNomorKamarByID = async (req, res) => {
+  let response = null;
+
+  try {
+    const id = req.params.id;
+
+    const kamar = await prisma.detailKamar.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+      include: {
+        Kamar: true,
+      },
     });
 
     if (!kamar) {
@@ -84,12 +146,13 @@ const getKamarByJenis = async (req, res) => {
         jenisKamar: jenisKamar,
       },
       include: {
+        DetailKamar: true,
         Tarif: {
           include: {
-            Season: true
-          }
+            Season: true,
+          },
         },
-      }
+      },
     });
 
     if (kamar.length === 0) {
@@ -114,19 +177,6 @@ const addKamar = async (req, res) => {
   try {
     const addKamar = await kamarValidator.validateAsync(req.body);
 
-    const findKamar = await prisma.kamar.findFirst({
-      where: {
-        nomor_kamar: parseInt(addKamar.nomor_kamar)
-      }
-    })
-
-    if(findKamar) {
-      return res.status(400).json({
-        status: 'error',
-        message: `Kamar nomor ${addKamar.nomor_kamar} sudah ada`
-      })
-    }
-
     const kamar = await prisma.kamar.create({
       data: addKamar,
     });
@@ -145,25 +195,48 @@ const addKamar = async (req, res) => {
   }
 };
 
+const addNomorKamar = async (req, res) => {
+  let response = null;
+  try {
+    const addKamar = await detailKamarValidator.validateAsync(req.body);
+
+    const findKamar = await prisma.detailKamar.findFirst({
+      where: {
+        nomor_kamar: parseInt(addKamar.nomor_kamar),
+      },
+    });
+
+    if (findKamar) {
+      return res.status(400).json({
+        status: "error",
+        message: `Kamar dengan nomor ${addKamar.nomor_kamar} sudah ada`,
+      });
+    }
+
+    const kamar = await prisma.DetailKamar.create({
+      data: addKamar,
+    });
+
+    const response = new Response.Success(
+      false,
+      "success",
+      "Nomor Kamar berhasil dibuat",
+      kamar
+    );
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    console.error(error);
+    const response = new Response.Error(true, "error", error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
 const updateKamar = async (req, res) => {
   let response = null;
 
   try {
     const id = req.params.id;
     const updatedKamar = await kamarValidator.validateAsync(req.body);
-
-    const findKamar = await prisma.kamar.findFirst({
-      where: {
-        nomor_kamar: parseInt(updatedKamar.nomor_kamar)
-      }
-    })
-
-    if(findKamar) {
-      return res.status(400).json({
-        status: 'error',
-        message: `Kamar nomor ${updatedKamar.nomor_kamar} sudah ada`
-      })
-    }
 
     const kamar = await prisma.kamar.findUnique({
       where: {
@@ -182,6 +255,63 @@ const updateKamar = async (req, res) => {
     }
 
     const updated = await prisma.kamar.update({
+      where: {
+        id: parseInt(id),
+      },
+
+      data: updatedKamar,
+    });
+
+    const response = new Response.Success(
+      false,
+      "success",
+      "Kamar berhasil diperbarui",
+      updated
+    );
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, "error", error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
+const updateNomorKamar = async (req, res) => {
+  let response = null;
+
+  try {
+    const id = req.params.id;
+    const updatedKamar = await detailKamarValidator.validateAsync(req.body);
+
+    const findKamar = await prisma.detailKamar.findFirst({
+      where: {
+        nomor_kamar: parseInt(updatedKamar.nomor_kamar),
+      },
+    });
+
+    if (findKamar) {
+      return res.status(400).json({
+        status: "error",
+        message: `Kamar dengan nomor ${updatedKamar.nomor_kamar} sudah ada`,
+      });
+    }
+
+    const kamar = await prisma.detailKamar.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!kamar) {
+      const response = new Response.Error(
+        true,
+        "error",
+        "Data Kamar Tidak Ada"
+      );
+      res.status(httpStatus.NOT_FOUND).json(response);
+      return;
+    }
+
+    const updated = await prisma.detailKamar.update({
       where: {
         id: parseInt(id),
       },
@@ -224,7 +354,54 @@ const deleteKamar = async (req, res) => {
       return;
     }
 
-    const deleted = await prisma.kamar.delete({
+    await prisma.$transaction([
+      prisma.kamar.delete({
+        where: {
+          id: parseInt(id),
+        },
+      }),
+      prisma.DetailKamar.deleteMany({
+        where: {
+          kamarId: parseInt(id),
+        },
+      }),
+    ]);
+
+    const response = new Response.Success(
+      false,
+      "success",
+      "Kamar dan DetailKamar berhasil dihapus"
+    );
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, "error", error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
+const deleteNomorKamar = async (req, res) => {
+  let response = null;
+
+  try {
+    const id = req.params.id;
+
+    const kamar = await prisma.detailKamar.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!kamar) {
+      const response = new Response.Error(
+        true,
+        "error",
+        "Data Kamar Tidak Ada"
+      );
+      res.status(httpStatus.NOT_FOUND).json(response);
+      return;
+    }
+
+    const deleted = await prisma.detailKamar.delete({
       where: {
         id: parseInt(id),
       },
@@ -283,7 +460,6 @@ const checkKamarAvailability = async (req, res) => {
         kamarId: true,
       },
     });
-    
 
     const kamarReservedIds = kamarReserved.map((kamar) => kamar.kamarId);
 
@@ -298,10 +474,10 @@ const checkKamarAvailability = async (req, res) => {
       include: {
         Tarif: {
           include: {
-            Season: true
-          }
+            Season: true,
+          },
         },
-      }
+      },
     });
 
     if (kamarAvailable.length === 0) {
@@ -329,4 +505,9 @@ module.exports = {
   updateKamar,
   deleteKamar,
   checkKamarAvailability,
+  getAllNomorKamar,
+  getNomorKamarByID,
+  addNomorKamar,
+  updateNomorKamar,
+  deleteNomorKamar,
 };

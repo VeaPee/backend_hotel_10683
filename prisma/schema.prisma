@@ -51,6 +51,15 @@ model Customer {
   @@map("CUSTOMER")
 }
 
+model DetailKamar {
+  id          Int   @id @default(autoincrement())
+  kamarId     Int
+  nomor_kamar Int?
+  Kamar       Kamar @relation(fields: [kamarId], references: [id], onDelete: Cascade)
+
+  @@map("DETAIL_KAMAR")
+}
+
 model DetailReservasiFasilitas {
   id          Int      @id @default(autoincrement())
   reservasiId Int
@@ -91,15 +100,15 @@ model FasilitasTambahan {
 }
 
 model Kamar {
-  id          Int     @id @default(autoincrement())
-  jenisKamar  String
-  jenisBed    String
-  kapasitas   Int?
-  luas        Int?
-  fasilitas   String
-  jumlah_bed  Int?
-  nomor_kamar Int?
+  id         Int    @id @default(autoincrement())
+  jenisKamar String
+  jenisBed   String
+  kapasitas  Int?
+  luas       Int?
+  fasilitas  String
+  jumlah_bed Int?
 
+  DetailKamar          DetailKamar[]
   DetailReservasiKamar DetailReservasiKamar[]
   Tarif                Tarif[]
 
@@ -107,7 +116,7 @@ model Kamar {
 }
 
 model NotaPelunasan {
-  id                 Int       @id @default(autoincrement())
+  id                 Int      @id @default(autoincrement())
   reservasiId        Int
   no_invoice         String
   tax                Float?
