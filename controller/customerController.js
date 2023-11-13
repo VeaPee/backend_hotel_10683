@@ -205,32 +205,51 @@ const getRiwayatTransaksi = async (req, res) => {
 
   try {
     const accountId = req.currentUser.id;
-  
-    const customer = await prisma.customer.findFirst({
-      where: {
-        akunId: parseInt(accountId)
-      }
-    })
+    const accountRole = req.currentUser.roleId;
 
-    if(!customer) {
-      const response = new Response.Error(true, "error",'Data Customer Tidak Ada');
-      res.status(httpStatus.OK).json(response);
-      return;
-    }
-  
-    const customerId = customer.id
-  
-
-    // Extract the status parameter from the request query
     const { status, nama_customer, prefix_reservasi } = req.query;
 
+    let whereClause = {}; // Declare whereClause here
 
-    // Define a filter object based on the status parameter
-    const whereClause = {
-      customerId: customerId,
-      // Add additional conditions based on your data model
-    };
+    if(accountRole === 2){
+      const pegawai = await prisma.pegawai.findFirst({
+        where: {
+          akunId: parseInt(accountId)
+        }
+      })
+  
+      if(!pegawai) {
+        const response = new Response.Error(true, "error",'Data Pegawai Tidak Ada');
+        res.status(httpStatus.OK).json(response);
+        return;
+      }
     
+      const pegawaiId = pegawai.id;
+
+      whereClause = {
+        pegawaiId: pegawaiId,
+      };
+    }
+    else if(accountRole === 6){
+      const customer = await prisma.customer.findFirst({
+        where: {
+          akunId: parseInt(accountId)
+        }
+      })
+  
+      if(!customer) {
+        const response = new Response.Error(true, "error",'Data Customer Tidak Ada');
+        res.status(httpStatus.OK).json(response);
+        return;
+      }
+    
+      const customerId = customer.id;
+
+      whereClause = {
+        customerId: customerId,
+      };
+    }
+
     if (status) {
       whereClause.status = status;
     }
@@ -267,6 +286,7 @@ const getRiwayatTransaksi = async (req, res) => {
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 }
+
 
 const getDetailRiwayatTransaksi = async (req, res) => {
   let response = null;
