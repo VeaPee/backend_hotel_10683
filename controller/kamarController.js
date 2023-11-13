@@ -434,7 +434,7 @@ const checkKamarAvailability = async (req, res) => {
         AND: [
           {
             Reservasi: {
-              status: "Sudah Dibayar",
+              status: "Sudah Dibayar" || "Sudah Check In",
               // (check_in <= tanggalAwal && tanggalAwal < check_out)
               OR: [
                 {

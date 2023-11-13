@@ -220,14 +220,43 @@ const getRiwayatTransaksi = async (req, res) => {
   
     const customerId = customer.id
   
+
+    // Extract the status parameter from the request query
+    const { status, nama_customer, prefix_reservasi } = req.query;
+
+
+    // Define a filter object based on the status parameter
+    const whereClause = {
+      customerId: customerId,
+      // Add additional conditions based on your data model
+    };
+    
+    if (status) {
+      whereClause.status = status;
+    }
+    
+    if (nama_customer) {
+      whereClause.Customer = {
+        nama_customer: {
+          contains: nama_customer,
+        },
+      };
+    }
+    
+    if (prefix_reservasi) {
+      whereClause.prefix_reservasi = {
+        contains: prefix_reservasi,
+      };
+    }
+
     const riwayatTransaksi = await prisma.reservasi.findMany({
-      where: {
-        customerId: customerId
-      },
+      where: whereClause,
       include: {
         NotaPelunasan: true,
         DetailReservasiKamar: true,
-        DetailReservasiFasilitas: true
+        DetailReservasiFasilitas: true,
+        Customer: true,
+        Pegawai: true
       }
     })
   
@@ -252,6 +281,8 @@ const getDetailRiwayatTransaksi = async (req, res) => {
       },
       include: {
         NotaPelunasan: true,
+        Customer: true,
+        Pegawai: true,
         DetailReservasiKamar: {
           include: {
             Kamar: {

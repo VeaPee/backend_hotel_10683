@@ -5,6 +5,7 @@ const transaksiValidator = require("../utils/transaksiValidator");
 const detailReservasiKamarValidator = require("../utils/detailReservasiKamarValidator");
 const detailReservasiFasilitasValidator = require("../utils/detailReservasiFasilitasValidator");
 const pembayaranValidator = require("../utils/pembayaranValidator");
+const statusPembayaranValidator = require("../utils/statusPembayaranValidator");
 
 const transaksiReservasi = async (req, res) => {
   let response = null;
@@ -14,8 +15,8 @@ const transaksiReservasi = async (req, res) => {
     const accountId = req.currentUser.id;
     let accountRole = parseInt(req.currentUser.roleId);
     const currentDate = new Date();
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
     const year = String(currentDate.getFullYear()).substring(2);
     const newDate = day + month + year;
 
@@ -25,14 +26,15 @@ const transaksiReservasi = async (req, res) => {
       return;
     }
 
-    let prefixReservasi = '';
+    let prefixReservasi = "";
     let prefixExists = true;
     let counter = 1;
 
     while (prefixExists) {
-      const paddedCounter = String(counter).padStart(3, '0');
-      prefixReservasi = (accountRole === 2 ? 'G' : 'P') + newDate + '-' + paddedCounter;
-      
+      const paddedCounter = String(counter).padStart(3, "0");
+      prefixReservasi =
+        (accountRole === 2 ? "G" : "P") + newDate + "-" + paddedCounter;
+
       const existingReservasi = await prisma.reservasi.findFirst({
         where: {
           prefix_reservasi: prefixReservasi,
@@ -55,6 +57,8 @@ const transaksiReservasi = async (req, res) => {
       });
 
       req.body.customerId = customerId;
+
+      console.log(customerId);
       req.body.pegawaiId = pegawaiCheck.id;
     } else if (accountRole == 6) {
       const customerCheck = await prisma.customer.findFirst({
@@ -84,7 +88,6 @@ const transaksiReservasi = async (req, res) => {
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
-
 
 const transaksiKamar = async (req, res) => {
   let response = null;
@@ -134,14 +137,11 @@ const transaksiFasilitas = async (req, res) => {
   }
 };
 
-const konfirmasiPembayaran = async (req, res) => {
+const konfirmasiResume = async (req, res) => {
   let response = null;
 
   try {
     const id = req.params.id;
-    const pembayaran = await pembayaranValidator.jaminanValidator.validateAsync(
-      req.body
-    );
 
     const status = await prisma.reservasi.findUnique({
       where: {
@@ -159,15 +159,42 @@ const konfirmasiPembayaran = async (req, res) => {
       return;
     }
 
-    const idReservasi = status.id;
+    req.body.reservasiId = id;
+    req.body.no_invoice = "TEMPORARY";
 
-    const jaminan = await prisma.notaPelunasan.findFirst({
+    const nota = await pembayaranValidator.validateAsync(req.body);
+
+    const notaSementara = await prisma.notaPelunasan.create({
+      data: nota,
+    });
+
+    const response = new Response.Success(
+      false,
+      "success",
+      "Harap Melanjutkan ke Pembayaran",
+      notaSementara
+    );
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    response = new Response.Error(true, "error", error.message);
+  }
+};
+
+const konfirmasiPembayaran = async (req, res) => {
+  let response = null;
+
+  try {
+    const id = req.params.id;
+
+    // const updatedStatus = await statusPembayaranValidator.validateAsync(req.body);
+
+    const status = await prisma.reservasi.findUnique({
       where: {
-        reservasiId: parseInt(idReservasi),
+        id: parseInt(id),
       },
     });
 
-    if (!jaminan) {
+    if (!status) {
       const response = new Response.Error(
         true,
         "error",
@@ -177,34 +204,23 @@ const konfirmasiPembayaran = async (req, res) => {
       return;
     }
 
-    const idNota = jaminan.id;
-
-    const nota = await prisma.notaPelunasan.create({
-      where: {
-        id: parseInt(idNota),
-      },
-
-      data: pembayaran,
-    });
-
-    const statusValid = "Sudah Dibayar";
-
-    const updatedStatus = await prisma.reservasi.update({
+    const updated = await prisma.reservasi.update({
       where: {
         id: parseInt(id),
       },
 
-      data: { status: statusValid },
+      data: {
+        status: "Sudah Dibayar",
+      },
     });
 
-    const responseStatus = new Response.Success(
+    const response = new Response.Success(
       false,
       "success",
-      "Status berhasil diperbarui",
-      updatedStatus
+      "Pembayaran Dikonfirmasi",
+      updated
     );
-
-    res.status(httpStatus.OK).json(responseStatus);
+    res.status(httpStatus.OK).json(response);
   } catch (error) {
     response = new Response.Error(true, "error", error.message);
     res.status(httpStatus.BAD_REQUEST).json(response);
@@ -221,10 +237,6 @@ const pembatalanReservasi = async (req, res) => {
       where: {
         id: parseInt(id),
       },
-      include: {
-        detailReservasiFasilitas: true,
-        detailReservasiKamar: true,
-      },
     });
 
     if (!reservasi) {
@@ -239,50 +251,46 @@ const pembatalanReservasi = async (req, res) => {
 
     if (
       reservasi.status === "Sudah Check In" ||
-      reservasi.status === "Selesai"
+      reservasi.status === "Selesai" ||
+      reservasi.status === "Dibatalkan"
     ) {
       const response = new Response.Error(
         true,
         "error",
-        "Reservasi tidak dapat dibatalkan karena sudah berlangsung"
+        "Reservasi tidak dapat dibatalkan"
       );
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
 
-    const updateStatus = await prisma.reservasi.update({
+    const tanggalCheckIn = new Date(reservasi.check_in);
+    const tanggalReservasi = new Date(reservasi.tanggal_reservasi);
+    const dayDiff = Math.ceil(
+      (tanggalCheckIn - tanggalReservasi) / (1000 * 60 * 60 * 24)
+    );
+
+    let updateMessage = "";
+    if (dayDiff > 7) {
+      updateMessage = "Uang Anda Dikembalikan";
+    } else {
+      updateMessage = "Uang Anda Tidak Dapat Dikembalikan";
+    }
+
+    const updated = await prisma.reservasi.update({
       where: {
         id: parseInt(id),
       },
-      include: {
-        detailReservasiFasilitas: true,
-        detailReservasiKamar: true,
+
+      data: {
+        status: "Dibatalkan",
       },
     });
-
-    // // Delete related records from detailReservasiFasilitas table
-    // for (const detailFasilitas of deleted.detailReservasiFasilitas) {
-    //   await prisma.detailReservasiFasilitas.delete({
-    //     where: {
-    //       id: detailFasilitas.id,
-    //     },
-    //   });
-    // }
-
-    // // Delete related records from detailReservasiKamar table
-    // for (const detailKamar of deleted.detailReservasiKamar) {
-    //   await prisma.detailReservasiKamar.delete({
-    //     where: {
-    //       id: detailKamar.id,
-    //     },
-    //   });
-    // }
 
     const response = new Response.Success(
       false,
       "success",
-      "Reservasi berhasil dibatalkan",
-      updateStatus
+      `Reservasi Dibatalkan - ${updateMessage}`,
+      updated
     );
     res.status(httpStatus.OK).json(response);
   } catch (error) {
@@ -295,6 +303,7 @@ module.exports = {
   transaksiReservasi,
   transaksiKamar,
   transaksiFasilitas,
+  konfirmasiResume,
   konfirmasiPembayaran,
   pembatalanReservasi,
 };

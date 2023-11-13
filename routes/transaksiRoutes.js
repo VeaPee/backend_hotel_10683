@@ -8,7 +8,9 @@ router.use(Auth);
 router.post('/transaksiReservasi', transaksiController.transaksiReservasi);
 router.post('/transaksiKamar', transaksiController.transaksiKamar);
 router.post('/transaksiFasilitas', transaksiController.transaksiFasilitas);
-router.post('/konfirmasiPembayaran/:id', transaksiController.konfirmasiPembayaran);
+router.post('/konfirmasiResume/:id', transaksiController.konfirmasiResume);
+
+router.put('/konfirmasiPembayaran/:id', transaksiController.konfirmasiPembayaran);
 router.put('/pembatalanReservasi/:id', transaksiController.pembatalanReservasi);
 
 module.exports = router;
