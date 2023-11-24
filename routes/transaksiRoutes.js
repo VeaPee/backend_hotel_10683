@@ -13,4 +13,8 @@ router.post('/konfirmasiResume/:id', transaksiController.konfirmasiResume);
 router.put('/konfirmasiPembayaran/:id', transaksiController.konfirmasiPembayaran);
 router.put('/pembatalanReservasi/:id', transaksiController.pembatalanReservasi);
 
+router.put('/checkIn/:id', transaksiController.checkIn);
+router.put('/checkOut/:id', transaksiController.checkOut);
+router.put('/tambahFasilitasNota/:id', transaksiController.tambahFasilitasNota);
+
 module.exports = router;

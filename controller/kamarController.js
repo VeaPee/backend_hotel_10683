@@ -426,6 +426,15 @@ const checkKamarAvailability = async (req, res) => {
   try {
     await availabilityValidator.validateAsync(req.body);
 
+    const jumlahKamar = await prisma.DetailKamar.groupBy({
+      by: ["nomor_kamar"],
+      _count: {
+        kamarId: true,
+      },
+    });
+    
+    console.log(jumlahKamar);
+    
     const tanggalAwal = new Date(req.body.tanggalAwal).toISOString();
     const tanggalAkhir = new Date(req.body.tanggalAkhir).toISOString();
 
@@ -472,6 +481,7 @@ const checkKamarAvailability = async (req, res) => {
         },
       },
       include: {
+        DetailKamar: true,
         Tarif: {
           include: {
             Season: true,
