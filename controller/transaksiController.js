@@ -353,6 +353,7 @@ const checkOut = async (req, res) => {
   try {
     const id = req.params.id;
     const accountId = req.currentUser.id;
+    let accountRole = parseInt(req.currentUser.roleId);
     // const updatedStatus = await statusPembayaranValidator.validateAsync(req.body);
 
     const status = await prisma.reservasi.findUnique({
@@ -410,14 +411,28 @@ const checkOut = async (req, res) => {
       },
     });
 
-    const updatedNotaPelunasan = await prisma.notaPelunasan.update({
-      where: {
-        id: parseInt(statusNota.id),
-      },
-      data: {
-        no_invoice: no_invoice,
-      },
-    });
+    if(status.prefix_reservasi.charAt(0) === "G"){
+      const updatedNotaPelunasan = await prisma.notaPelunasan.update({
+        where: {
+          id: parseInt(statusNota.id),
+        },
+        data: {
+          no_invoice: no_invoice,
+          subtotal: statusNota.subtotal + (statusNota.jaminan * 0.5)
+        },
+      });
+      console.log("Updated Nota Pelunasan:", updatedNotaPelunasan);
+    }else{
+      const updatedNotaPelunasan = await prisma.notaPelunasan.update({
+        where: {
+          id: parseInt(statusNota.id),
+        },
+        data: {
+          no_invoice: no_invoice,
+        },
+      });
+      console.log("Updated Nota Pelunasan:", updatedNotaPelunasan);
+    }
 
     //Cek Pegawai
 
@@ -447,8 +462,6 @@ const checkOut = async (req, res) => {
         status: "Sudah Check Out",
       },
     });
-
-    console.log("Updated Nota Pelunasan:", updatedNotaPelunasan);
     
     const response = new Response.Success(
       false,

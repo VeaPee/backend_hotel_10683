@@ -245,7 +245,8 @@ const getRiwayatTransaksi = async (req, res) => {
     const accountId = req.currentUser.id;
     const accountRole = req.currentUser.roleId;
 
-    const { status, nama_customer, prefix_reservasi, check_in } = req.query;
+    const { status, nama_customer, prefix_reservasi, check_in, month } =
+      req.query;
 
     let whereClause = {}; // Declare whereClause here
 
@@ -301,11 +302,7 @@ const getRiwayatTransaksi = async (req, res) => {
       });
 
       if (!fo) {
-        const response = new Response.Error(
-          true,
-          "error",
-          "Data FO Tidak Ada"
-        );
+        const response = new Response.Error(true, "error", "Data FO Tidak Ada");
         res.status(httpStatus.OK).json(response);
         return;
       }
@@ -315,7 +312,43 @@ const getRiwayatTransaksi = async (req, res) => {
           equals: check_in ? new Date(`${check_in}T00:00:00.000Z`) : undefined,
         },
       };
+    } else if (accountRole === 4 || accountRole === 5) {
+      const ownerGM = await prisma.pegawai.findFirst({
+        where: {
+          akunId: parseInt(accountId),
+        },
+      });
 
+      if (!ownerGM) {
+        const response = new Response.Error(
+          true,
+          "error",
+          "Data Owner / GM Tidak Ada"
+        );
+        res.status(httpStatus.OK).json(response);
+        return;
+      }
+
+      const monthTemp = (parseInt(month) % 12) + 1;
+      const nextYear = parseInt(month) === 12 ? 2024 : 2023;
+      
+      const startDate = new Date(`2023-${month}-01T00:00:00.000Z`);
+      const endDate = new Date(`${nextYear}-${monthTemp.toString().padStart(2, '0')}-01T00:00:00.000Z`);
+      
+      whereClause = {
+        tanggal_reservasi: month
+          ? {
+              gte: startDate,
+              lt: endDate,
+            }
+          : undefined,
+      };
+      
+      
+      
+      
+      console.log("Bulan Awal",month)
+      console.log("Bulan Akhir",monthTemp)
     }
 
     if (status) {
@@ -347,7 +380,11 @@ const getRiwayatTransaksi = async (req, res) => {
       where: whereClause,
       include: {
         NotaPelunasan: true,
-        DetailReservasiKamar: true,
+        DetailReservasiKamar: {
+          include: {
+            Kamar: true,
+          },
+        },
         DetailReservasiFasilitas: true,
         Customer: true,
         Pegawai: true,

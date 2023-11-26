@@ -177,6 +177,19 @@ const addKamar = async (req, res) => {
   try {
     const addKamar = await kamarValidator.validateAsync(req.body);
 
+    const findKamar = await prisma.kamar.findFirst({
+      where: {
+        jenisKamar: addKamar.jenisKamar,
+      },
+    });
+
+    if (findKamar) {
+      return res.status(400).json({
+        status: "error",
+        message: `Kamar ${addKamar.jenisKamar} sudah ada`,
+      });
+    }
+
     const kamar = await prisma.kamar.create({
       data: addKamar,
     });
@@ -237,6 +250,19 @@ const updateKamar = async (req, res) => {
   try {
     const id = req.params.id;
     const updatedKamar = await kamarValidator.validateAsync(req.body);
+
+    const findKamar = await prisma.kamar.findFirst({
+      where: {
+        jenisKamar: updatedKamar.jenisKamar,
+      },
+    });
+
+    if (findKamar) {
+      return res.status(400).json({
+        status: "error",
+        message: `Kamar ${updatedKamar.jenisKamar} sudah ada`,
+      });
+    }
 
     const kamar = await prisma.kamar.findUnique({
       where: {
@@ -443,7 +469,9 @@ const checkKamarAvailability = async (req, res) => {
         AND: [
           {
             Reservasi: {
-              status: "Sudah Dibayar" || "Sudah Check In",
+              status: {
+                in: ["Sudah Dibayar", "Sudah Check In"],
+              },
               // (check_in <= tanggalAwal && tanggalAwal < check_out)
               OR: [
                 {
