@@ -85,6 +85,9 @@ const login = async (req, res) => {
 
     const account = await prisma.akun.findUnique({
       where: { username: request.username },
+      include: {
+        Customer: true, // Include the Customer information
+      },
     });
     if (!account) {
       response = new Response.Error(true,"error", loginErrorMessage);
@@ -109,8 +112,8 @@ const login = async (req, res) => {
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // expires in 24 hours
       },
       await process.env.KEY
-      // await callAccessSecretVersion
-      ()
+      // await callAccessSecretVersion()
+      
     );
 
     const data = {
@@ -118,6 +121,7 @@ const login = async (req, res) => {
       username: account.username,
       password: account.password,
       token: createJwtToken,
+      Customer: account.Customer
     };
     response = new Response.Success(false, "success", "success", data);
     res.status(httpStatus.OK).json(response);
