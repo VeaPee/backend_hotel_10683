@@ -120,6 +120,7 @@ const login = async (req, res) => {
       id: account.id,
       username: account.username,
       password: account.password,
+      roleId: account.roleId,
       token: createJwtToken,
       Customer: account.Customer
     };
