@@ -1,21 +1,26 @@
+substitutions:
+  _REGION: asia-southeast2
+
 steps:
-# Install dependencies
-- name: 'gcr.io/cloud-builders/npm'
-  args: ['install']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA', '.']
+  id: build
 
-# Migrate Prisma
-- name: 'gcr.io/cloud-builders/npm'
-  entrypoint: 'npx'
-  args: [
-    'prisma',
-    'migrate',
-    'dev',
-    '--name',
-    'initvm'
-  ]
-  env:
-    - 'MYSQL=${_SECRET}'
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['run', '--rm', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA', npm', 'run', 'test']
+  id: test
 
-# Deploy the application to App Engine
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: ['app', 'deploy']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA']
+  id: push
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+  entrypoint: gcloud
+  args: 
+    [
+      "deploy", "releases", "create", "release-$SHORT_SHA",
+      "--delivery-pipeline", "pipeline-backend",
+      "--region", "${_REGION}",
+      "--images", "app=${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA"
+    ]
+  id: deploy

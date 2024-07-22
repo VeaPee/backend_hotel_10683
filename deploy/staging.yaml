@@ -1,0 +1,75 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: staging
+spec:
+  template:
+    spec:
+      containers:
+        - image: app
+          env:
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: DATABASE_URL
+          - name: NODE_ENV
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: NODE_ENV
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: JWT_SECRET
+          - name: KEY
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: KEY      
+          - name: EMAIL_HOST
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: EMAIL_HOST
+          - name: EMAIL_USER
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: EMAIL_USER
+          - name: EMAIL_PASS
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: EMAIL_PASS
+          - name: EMAIL_TARGET
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: EMAIL_TARGET
+          - name: PORT
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: PORT
+          - name: CLOUDINARY_NAME
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: CLOUDINARY_NAME
+          - name: CLOUDINARY_API_KEY
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: CLOUDINARY_API_KEY
+          - name: CLOUDINARY_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: CLOUDINARY_SECRET
+          - name: FRONTEND_URL
+            valueFrom:
+              secretKeyRef:
+                key: latest
+                name: FRONTEND_URL
