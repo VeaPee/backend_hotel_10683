@@ -26,7 +26,7 @@ const createServer = () => {
   const reportRoutes = require("./routes/reportRoutes");
 
   // PORT AND PATH
-  const PORT = process.env.PORT || 6000;
+  const PORT = process.env.PORT || 5000;
   const VERSION_API = "/api/v1";
   const appendUrl = (url) => `${VERSION_API}${url}`;
 
