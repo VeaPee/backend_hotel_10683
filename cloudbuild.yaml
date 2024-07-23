@@ -2,6 +2,7 @@ substitutions:
   _REGION: asia-southeast2
   _VM_USER: veapee
   _VM_IP: 34.1.133.241
+  _VM_NAME: aplikasi-testing-ci-cd
   _ZONE: asia-southeast1-a
 
 steps:
@@ -38,5 +39,5 @@ steps:
   args:
     [
       '-c',
-      'echo "Deploy started at $(date)" && gcloud compute ssh ${_VM_USER}@${_VM_IP} --zone=${_ZONE} --command "docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA && docker stop app || true && docker rm app || true && docker run -d --name app ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA" && echo "Deploy ended at $(date)"'
+      'echo "Deploy started at $(date)" && gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command "docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA && docker stop app || true && docker rm app || true && docker run -d --name app ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA" && echo "Deploy ended at $(date)"'
     ]
