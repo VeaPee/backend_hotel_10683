@@ -1,9 +1,10 @@
 substitutions:
-  _REGION: asia-southeast2
+  _REGION: asia-southeast1
   _VM_USER: veapee
-  _VM_IP: 34.1.133.241
   _VM_NAME: aplikasi-testing-ci-cd
   _ZONE: asia-southeast1-a
+  _IMAGE_NAME: app
+  _IMAGE_TAG: $COMMIT_SHA
 
 steps:
 - name: 'gcr.io/cloud-builders/docker'
@@ -12,7 +13,7 @@ steps:
   args:
     [
       '-c',
-      'echo "Build started at $(date)" && docker build -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA . && echo "Build ended at $(date)"'
+      'echo "Build started at $(date)" && docker build -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:latest . && echo "Build ended at $(date)"'
     ]
 
 - name: 'gcr.io/cloud-builders/docker'
@@ -21,7 +22,7 @@ steps:
   args:
     [
       '-c',
-      'echo "Test started at $(date)" && docker run ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA npm run test && echo "Test ended at $(date)"'
+      'echo "Test started at $(date)" && docker run ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} npm run test && echo "Test ended at $(date)"'
     ]
 
 - name: 'gcr.io/cloud-builders/docker'
@@ -30,7 +31,7 @@ steps:
   args:
     [
       '-c',
-      'echo "Push started at $(date)" && docker push ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA && echo "Push ended at $(date)"'
+      'echo "Push started at $(date)" && docker push ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && docker push ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:latest && echo "Push ended at $(date)"'
     ]
 
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -39,5 +40,10 @@ steps:
   args:
     [
       '-c',
-      'echo "Deploy started at $(date)" && gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command "docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA && docker stop app || true && docker rm app || true && docker run -d --name app ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA" && echo "Deploy ended at $(date)"'
+      'echo "Deploy started at $(date)" && 
+      gcloud auth configure-docker && 
+      gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command 
+      "docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:latest && 
+      docker stop app || true && docker rm app || true && docker run -d --name app ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:latest" && 
+      echo "Deploy ended at $(date)"'
     ]
