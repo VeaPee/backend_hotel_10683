@@ -23,7 +23,6 @@ steps:
        echo "Fetching secrets ended at $(date)"'
     ]
 
-
 - name: 'gcr.io/cloud-builders/docker'
   id: build
   entrypoint: 'sh'
@@ -61,7 +60,12 @@ steps:
       gcloud auth configure-docker && 
       gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command 
       "docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} &&
-      docker stop app || true && docker rm app || true &&
-      docker run -d --name app --env-file /workspace/KEY --env-file /workspace/MYSQL --env-file /workspace/PORT ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}" && 
+      docker stop app || true && 
+      docker rm app || true &&
+      docker run -d --name app 
+      --env-file /workspace/KEY 
+      --env-file /workspace/MYSQL 
+      --env-file /workspace/PORT 
+      ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}" && 
       echo "Deploy ended at $(date)"'
     ]
