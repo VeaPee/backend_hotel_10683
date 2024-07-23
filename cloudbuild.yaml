@@ -48,9 +48,9 @@ steps:
               docker stop app || true && \
               docker rm app || true && \
               docker run -d --name app \
-              --set-env-vars PORT=$$PORT \
-              --set-env-vars MYSQL=$$MYSQL \
-              --set-env-vars KEY=$$KEY \
+              -e PORT=\$(gcloud secrets versions access latest --secret=PORT) \
+              -e MYSQL=\$(gcloud secrets versions access latest --secret=MYSQL) \
+              -e KEY=\$(gcloud secrets versions access latest --secret=KEY) \
               ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}'"
       echo "Deploy ended at $(date)"
 
