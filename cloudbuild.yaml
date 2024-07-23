@@ -5,9 +5,6 @@ substitutions:
   _ZONE: asia-southeast1-a
   _IMAGE_NAME: app
   _IMAGE_TAG: $COMMIT_SHA
-  _PORT: $(gcloud secrets versions access latest --secret=PORT)
-  _MYSQL: $(gcloud secrets versions access latest --secret=MYSQL)
-  _KEY: $(gcloud secrets versions access latest --secret=KEY)
 
 steps:
 - name: 'gcr.io/cloud-builders/docker'
@@ -56,20 +53,23 @@ steps:
       echo "Deploy started at $(date)"
       gcloud auth configure-docker
 
-      
-    
-      echo "PORT: ${_PORT}"
-      echo "MYSQL: ${_MYSQL}"
-      echo "KEY: ${_KEY}"
-
       gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command "sh -c 'docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && \
               docker stop app || true && \
               docker rm app || true && \
               docker run -d --name app \
               -p 5000:5000 \
-              -e PORT=${_PORT} \
-              -e MYSQL=${_MYSQL} \
-              -e KEY=${_KEY} \
+              -e PORT=${PORT} \
+              -e MYSQL=${MYSQL} \
+              -e KEY=${KEY} \
               ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}'"
 
       echo "Deploy ended at $(date)"
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/tugas-akhir-10683/secrets/KEY/versions/latest
+    env: 'KEY'
+  - versionName: projects/tugas-akhir-10683/secrets/MYSQL/versions/latest
+    env: 'MYSQL'
+  - versionName: projects/tugas-akhir-10683/secrets/PORT/versions/latest
+    env: 'PORT'
