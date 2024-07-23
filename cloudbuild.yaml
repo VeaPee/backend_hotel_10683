@@ -14,8 +14,7 @@ steps:
     [
       '-c',
       'echo "Build started at $(date)" && 
-      docker build -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} . && 
-      echo "Build ended at $(date)"'
+      docker build -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} . && echo "Build ended at $(date)"'
     ]
 
 - name: 'gcr.io/cloud-builders/docker'
@@ -43,25 +42,20 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   id: deploy
   entrypoint: 'bash'
-  secretEnv: ['KEY', 'MYSQL', 'PORT']
   args:
     - '-c'
     - |
       set -e
       echo "Deploy started at $(date)"
       gcloud auth configure-docker
-      gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command 
-      "sh -c 'docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && \
+      gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command "sh -c 'docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && \
               docker stop app || true && \
               docker rm app || true && \
               docker run -d --name app \
               -p 5000:5000 \
               ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}'"
-      --set-env-vars PORT=$$PORT 
-      --set-env-vars MYSQL=$$MYSQL 
-      --set-env-vars KEY=$$KEY
-
       echo "Deploy ended at $(date)"
+  secretEnv: ['KEY', 'MYSQL', 'PORT']
 
 availableSecrets:
   secretManager:
