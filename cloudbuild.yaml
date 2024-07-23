@@ -42,7 +42,7 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   id: deploy
   entrypoint: 'bash'
-  secretEnv: ['KEY','MYSQL','PORT'] 
+  secretEnv: ['KEY','MYSQL'] 
   args:
     - '-c'
     - |
