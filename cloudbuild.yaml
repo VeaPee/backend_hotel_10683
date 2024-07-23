@@ -7,22 +7,6 @@ substitutions:
   _IMAGE_TAG: $COMMIT_SHA
 
 steps:
-- name: 'gcr.io/cloud-builders/gcloud'
-  id: fetch-secrets
-  entrypoint: 'sh'
-  args:
-    [
-      '-c',
-      'echo "Fetching secrets started at $(date)" &&
-       KEY=$(gcloud secrets versions access latest --secret=KEY) &&
-       MYSQL=$(gcloud secrets versions access latest --secret=MYSQL) &&
-       PORT=$(gcloud secrets versions access latest --secret=PORT) &&
-       echo "KEY=$KEY" > /workspace/secrets.env &&
-       echo "MYSQL=$MYSQL" >> /workspace/secrets.env &&
-       echo "PORT=$PORT" >> /workspace/secrets.env &&
-       echo "Fetching secrets ended at $(date)"'
-    ]
-
 - name: 'gcr.io/cloud-builders/docker'
   id: build
   entrypoint: 'sh'
@@ -52,20 +36,22 @@ steps:
 
 - name: 'gcr.io/cloud-builders/gcloud'
   id: deploy
-  entrypoint: 'sh'
+  entrypoint: 'bash' # Gunakan 'bash' untuk mendukung ekspansi variabel di dalam string
+  secretEnv: ['KEY', 'MYSQL', 'PORT']
   args:
-    [
-      '-c',
-      'echo "Deploy started at $(date)" && 
-      gcloud auth configure-docker && 
-      gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command 
-      "docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} &&
-      docker stop app || true && 
-      docker rm app || true &&
-      docker run -d --name app 
-      --env-file /workspace/KEY 
-      --env-file /workspace/MYSQL 
-      --env-file /workspace/PORT 
-      ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}" && 
-      echo "Deploy ended at $(date)"'
-    ]
+    - '-c'
+    - |
+      set -e
+      echo "Deploy started at $(date)"
+      gcloud auth configure-docker
+      COMMAND="docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && \
+              docker stop app || true && \
+              docker rm app || true && \
+              docker run -d --name app \
+              --env-file /workspace/KEY \
+              --env-file /workspace/MYSQL \
+              --env-file /workspace/PORT \
+              ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}"
+      gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command "sh -c '$COMMAND'"
+      echo "Deploy ended at $(date)"
+
