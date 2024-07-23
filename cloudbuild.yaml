@@ -1,5 +1,5 @@
 substitutions:
-  _REGION: asia-southeast1
+  _REGION: asia-southeast2
   _VM_USER: veapee
   _VM_NAME: aplikasi-testing-ci-cd
   _ZONE: asia-southeast1-a
@@ -13,7 +13,7 @@ steps:
   args:
     [
       '-c',
-      'echo "Build started at $(date)" && docker build -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:latest . && echo "Build ended at $(date)"'
+      'echo "Build started at $(date)" && docker build -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}G . && echo "Build ended at $(date)"'
     ]
 
 - name: 'gcr.io/cloud-builders/docker'
@@ -31,7 +31,7 @@ steps:
   args:
     [
       '-c',
-      'echo "Push started at $(date)" && docker push ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && docker push ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:latest && echo "Push ended at $(date)"'
+      'echo "Push started at $(date)" && docker push ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && docker push ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && echo "Push ended at $(date)"'
     ]
 
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -43,7 +43,7 @@ steps:
       'echo "Deploy started at $(date)" && 
       gcloud auth configure-docker && 
       gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command 
-      "docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:latest && 
-      docker stop app || true && docker rm app || true && docker run -d --name app ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:latest" && 
+      "docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && 
+      docker stop app || true && docker rm app || true && docker run -d --name app ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}" && 
       echo "Deploy ended at $(date)"'
     ]
