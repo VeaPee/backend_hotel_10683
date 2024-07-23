@@ -3,34 +3,37 @@ substitutions:
 
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA', '.']
   id: build
-
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['run', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA', 'npm', 'run', 'test']
-  id: test
-
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-  entrypoint: gsutil
-  args: ['cp', '-r', 'coverage/', 'gs://code_coverage_10683/coverage/']
-  id: upload-code-coverage
-
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-  entrypoint: gsutil
-  args: ['cp', '-r', 'test-results/', 'gs://code_coverage_10683/test-results/']
-  id: upload-test-results
-  
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA']
-  id: push
-
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-  entrypoint: gcloud
-  args: 
+  entrypoint: 'sh'
+  args:
     [
-      "deploy", "releases", "create", "release-$SHORT_SHA",
-      "--delivery-pipeline", "pipeline-backend",
-      "--region", "${_REGION}",
-      "--images", "app=${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA"
+      '-c',
+      'echo "Build started at $(date)" && docker build -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA . && echo "Build ended at $(date)"'
     ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: test
+  entrypoint: 'sh'
+  args:
+    [
+      '-c',
+      'echo "Test started at $(date)" && docker run ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA npm run test && echo "Test ended at $(date)"'
+    ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: push
+  entrypoint: 'sh'
+  args:
+    [
+      '-c',
+      'echo "Push started at $(date)" && docker push ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA && echo "Push ended at $(date)"'
+    ]
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   id: deploy
+  entrypoint: 'sh'
+  args:
+    [
+      '-c',
+      'echo "Deploy started at $(date)" && gcloud deploy releases create release-$SHORT_SHA --delivery-pipeline pipeline-backend --region ${_REGION} --images app=${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/app:$COMMIT_SHA && echo "Deploy ended at $(date)"'
+    ]
