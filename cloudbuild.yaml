@@ -5,6 +5,9 @@ substitutions:
   _ZONE: asia-southeast1-a
   _IMAGE_NAME: app
   _IMAGE_TAG: $COMMIT_SHA
+  PORT: $(gcloud secrets versions access latest --secret=PORT)
+  MYSQL: $(gcloud secrets versions access latest --secret=MYSQL)
+  KEY: $(gcloud secrets versions access latest --secret=KEY)
 
 steps:
 - name: 'gcr.io/cloud-builders/docker'
@@ -50,9 +53,7 @@ steps:
       echo "Deploy started at $(date)"
       gcloud auth configure-docker
 
-      PORT=$(gcloud secrets versions access latest --secret=PORT)
-      MYSQL=$(gcloud secrets versions access latest --secret=MYSQL)
-      KEY=$(gcloud secrets versions access latest --secret=KEY)
+      
     
       echo "PORT: ${PORT}"
       echo "MYSQL: ${MYSQL}"
