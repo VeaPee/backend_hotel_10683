@@ -36,7 +36,7 @@ steps:
 
 - name: 'gcr.io/cloud-builders/gcloud'
   id: deploy
-  entrypoint: 'bash' # Gunakan 'bash' untuk mendukung ekspansi variabel di dalam string
+  entrypoint: 'bash'
   secretEnv: ['KEY', 'MYSQL', 'PORT']
   args:
     - '-c'
@@ -54,4 +54,5 @@ steps:
               ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}"
       gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command "sh -c '$COMMAND'"
       echo "Deploy ended at $(date)"
+
 
