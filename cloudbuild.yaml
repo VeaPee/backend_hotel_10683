@@ -13,12 +13,16 @@ steps:
   args:
     [
       '-c',
-      'echo "Fetching secrets from Google Secret Manager" &&
-      gcloud secrets versions access latest --secret="KEY" > /workspace/KEY &&
-      gcloud secrets versions access latest --secret="MYSQL" > /workspace/MYSQL &&
-      gcloud secrets versions access latest --secret="PORT" > /workspace/PORT &&
-      echo "Secrets fetched"'
+      'echo "Fetching secrets started at $(date)" &&
+       KEY=$(gcloud secrets versions access latest --secret=KEY) &&
+       MYSQL=$(gcloud secrets versions access latest --secret=MYSQL) &&
+       PORT=$(gcloud secrets versions access latest --secret=PORT) &&
+       echo "KEY=$KEY" > /workspace/secrets.env &&
+       echo "MYSQL=$MYSQL" >> /workspace/secrets.env &&
+       echo "PORT=$PORT" >> /workspace/secrets.env &&
+       echo "Fetching secrets ended at $(date)"'
     ]
+
 
 - name: 'gcr.io/cloud-builders/docker'
   id: build
