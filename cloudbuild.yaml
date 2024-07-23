@@ -49,25 +49,25 @@ steps:
       set -e
       echo "Deploy started at $(date)"
       gcloud auth configure-docker
+
+      PORT_FILE=$(mktemp)
+      MYSQL_FILE=$(mktemp)
+      KEY_FILE=$(mktemp)
+
+      gcloud secrets versions access latest --secret=PORT > $PORT_FILE
+      gcloud secrets versions access latest --secret=MYSQL > $MYSQL_FILE
+      gcloud secrets versions access latest --secret=KEY > $KEY_FILE
+    
       gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command "sh -c 'docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && \
               docker stop app || true && \
               docker rm app || true && \
               docker run -d --name app \
               -p 5000:5000 \
-              -e PORT=$(gcloud secrets versions access latest --secret=PORT) \
-              -e MYSQL=$(gcloud secrets versions access latest --secret=MYSQL) \
-              -e KEY=$(gcloud secrets versions access latest --secret=KEY) \
+              -e PORT=\$(cat $PORT_FILE) \
+              -e MYSQL=\$(cat $MYSQL_FILE) \
+              -e KEY=\$(cat $KEY_FILE) \
               ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}'"
-      echo "Deploy ended at $(date)"
-      echo "Verifying environment variables..."
-      gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command "sh -c 'docker exec app /bin/sh -c \"env | grep -E 'PORT|MYSQL|KEY'\"'"
-      echo "Verification ended at $(date)"
 
-availableSecrets:
-  secretManager:
-  - versionName: projects/tugas-akhir-10683/secrets/KEY/versions/latest
-    env: 'KEY'
-  - versionName: projects/tugas-akhir-10683/secrets/MYSQL/versions/latest
-    env: 'MYSQL'
-  - versionName: projects/tugas-akhir-10683/secrets/PORT/versions/latest
-    env: 'PORT'
+      rm -f $PORT_FILE $MYSQL_FILE $KEY_FILE
+      
+      echo "Deploy ended at $(date)"
