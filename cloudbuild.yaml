@@ -1,6 +1,6 @@
 substitutions:
   _REGION: asia-southeast1
-  _VM_USER: veapee
+  _VM_USER: vincentius_vap
   _VM_NAME: aplikasi-testing-ci-cd
   _ZONE: asia-southeast1-a
   _IMAGE_NAME: app
@@ -37,7 +37,7 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   id: deploy
   entrypoint: 'bash'
-  # secretEnv: ['KEY', 'MYSQL', 'PORT']
+  secretEnv: ['KEY', 'MYSQL', 'PORT']
   args:
     - '-c'
     - |
@@ -48,8 +48,17 @@ steps:
               docker stop app || true && \
               docker rm app || true && \
               docker run -d --name app \
-              --env-file /workspace/KEY \
-              --env-file /workspace/MYSQL \
-              --env-file /workspace/PORT \
+              --set-env-vars PORT=$$PORT \
+              --set-env-vars MYSQL=$$MYSQL \
+              --set-env-vars KEY=$$KEY \
               ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}'"
       echo "Deploy ended at $(date)"
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/tugas-akhir-10683/secrets/KEY/versions/latest
+    env: 'KEY'
+  - versionName: projects/tugas-akhir-10683/secrets/MYSQL/versions/latest
+    env: 'MYSQL'
+  - versionName: projects/tugas-akhir-10683/secrets/PORT/versions/latest
+    env: 'PORT'
