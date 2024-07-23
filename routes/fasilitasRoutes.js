@@ -1,10 +1,10 @@
 const express = require('express');
 
 const router = new express.Router();
-const Auth = require('../middleware/auth');
+// const Auth = require('../middleware/auth');
 const fasilitasController = require('../controller/fasilitasController');
 
-router.use(Auth);
+// router.use(Auth);
 router.get('/getAllFasilitas', fasilitasController.getAllFasilitas);
 router.get('/getFasilitasByID/:id', fasilitasController.getFasilitasByID);
 router.get('/getFasilitasByNama/:nama_fasilitas', fasilitasController.getFasilitasByNama);

@@ -1,55 +1,55 @@
-const express = require('express')
-const dotenv = require('dotenv');
+const express = require("express");
+const dotenv = require("dotenv");
 // const callAccessSecretVersionMySQL = require('./prisma/mysql');
-const config = require('./config');
-const cors = require('cors');
-
-const app = express();
-
-// Database & Env
-dotenv.config();
-// callAccessSecretVersionMySQL()
-console.log(config.MYSQL);
-
+const config = require("./config");
+const cors = require("cors");
 // MIDDLEWARE
-const pageNotFound = require('./utils/pageNotFound');
+const pageNotFound = require("./utils/pageNotFound");
 
-// ENDPOINTS
-const akunRoutes = require('./routes/akunRoutes')
-const authRoutes = require('./routes/authRoutes')
-const customerRoutes = require('./routes/customerRoutes')
-const fasilitasRoutes = require('./routes/fasilitasRoutes')
-const kamarRoutes = require('./routes/kamarRoutes')
-const tarifRoutes = require('./routes/tarifRoutes')
-const seasonRoutes = require('./routes/seasonRoutes')
-const transaksiRoutes = require('./routes/transaksiRoutes')
-const reportRoutes = require('./routes/reportRoutes')
+const createServer = () => {
+  const app = express();
 
-// PORT AND PATH
-const PORT = process.env.PORT || 6000;
-const VERSION_API = '/api/v1';
-const appendUrl = (url) => `${VERSION_API}${url}`;
+  // Database & Env
+  dotenv.config();
+  // callAccessSecretVersionMySQL()
+  console.log(config.MYSQL);
 
-// MIDDLEWARE
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+  // ENDPOINTS
+  const akunRoutes = require("./routes/akunRoutes");
+  const authRoutes = require("./routes/authRoutes");
+  const customerRoutes = require("./routes/customerRoutes");
+  const fasilitasRoutes = require("./routes/fasilitasRoutes");
+  const kamarRoutes = require("./routes/kamarRoutes");
+  const tarifRoutes = require("./routes/tarifRoutes");
+  const seasonRoutes = require("./routes/seasonRoutes");
+  const transaksiRoutes = require("./routes/transaksiRoutes");
+  const reportRoutes = require("./routes/reportRoutes");
 
-// ROUTER
-app.use(appendUrl('/akun'), akunRoutes);
-app.use(appendUrl('/auth'), authRoutes);
-app.use(appendUrl('/customer'), customerRoutes);
-app.use(appendUrl('/fasilitas'), fasilitasRoutes);
-app.use(appendUrl('/kamar'), kamarRoutes);
-app.use(appendUrl('/tarif'), tarifRoutes);
-app.use(appendUrl('/season'), seasonRoutes);
-app.use(appendUrl('/transaksi'), transaksiRoutes);
-app.use(appendUrl('/report'), reportRoutes);
+  // PORT AND PATH
+  const PORT = process.env.PORT || 6000;
+  const VERSION_API = "/api/v1";
+  const appendUrl = (url) => `${VERSION_API}${url}`;
 
-// ENDPOINT NOT CREATED
-app.use('/', pageNotFound);
+  // MIDDLEWARE
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(cors());
 
+  // ROUTER
+  app.use(appendUrl("/akun"), akunRoutes);
+  app.use(appendUrl("/auth"), authRoutes);
+  app.use(appendUrl("/customer"), customerRoutes);
+  app.use(appendUrl("/fasilitas"), fasilitasRoutes);
+  app.use(appendUrl("/kamar"), kamarRoutes);
+  app.use(appendUrl("/tarif"), tarifRoutes);
+  app.use(appendUrl("/season"), seasonRoutes);
+  app.use(appendUrl("/transaksi"), transaksiRoutes);
+  app.use(appendUrl("/report"), reportRoutes);
 
-app.listen(PORT, () => {
-    console.log(`Listening on port http://localhost:${PORT}`);
-  });
+  // ENDPOINT NOT CREATED
+  app.use("/", pageNotFound);
+
+  return { app, PORT };
+};
+
+module.exports = createServer;

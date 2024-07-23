@@ -1,10 +1,10 @@
 const express = require('express');
 
 const router = new express.Router();
-const Auth = require('../middleware/auth');
+// const Auth = require('../middleware/auth');
 const kamarController = require('../controller/kamarController');
 
-router.use(Auth);
+// router.use(Auth);
 router.get('/getAllKamar', kamarController.getAllKamar);
 router.get('/getKamarByID/:id', kamarController.getKamarByID);
 router.get('/getKamarByJenis/:jenisKamar', kamarController.getKamarByJenis);

@@ -1,10 +1,10 @@
 const express = require('express');
 
 const router = new express.Router();
-const Auth = require('../middleware/auth');
+// const Auth = require('../middleware/auth');
 const seasonController = require('../controller/seasonController');
 
-router.use(Auth);
+// router.use(Auth);
 router.get('/getAllSeason', seasonController.getAllSeason);
 router.get('/getSeasonByID/:id', seasonController.getSeasonByID);
 router.get('/getSeasonByJenis/:jenis_season', seasonController.getSeasonByJenis);
