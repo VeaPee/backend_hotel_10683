@@ -1,3 +1,11 @@
+substitutions:
+  _REGION: asia-southeast1
+  _VM_USER: veapee
+  _VM_NAME: aplikasi-testing-ci-cd
+  _ZONE: asia-southeast1-a
+  _IMAGE_NAME: app
+  _IMAGE_TAG: $COMMIT_SHA
+
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   id: build
