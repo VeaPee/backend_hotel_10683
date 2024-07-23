@@ -29,7 +29,7 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   id: deploy
   entrypoint: 'bash'
-  secretEnv: ['KEY', 'MYSQL', 'PORT']
+  # secretEnv: ['KEY', 'MYSQL', 'PORT']
   args:
     - '-c'
     - |
@@ -45,12 +45,3 @@ steps:
               --env-file /workspace/PORT \
               ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG}'"
       echo "Deploy ended at $(date)"
-
-secrets:
-- secretManagerSecrets:
-  - versionName: projects/${PROJECT_ID}/secrets/KEY/versions/latest
-    env: 'KEY'
-  - versionName: projects/${PROJECT_ID}/secrets/MYSQL/versions/latest
-    env: 'MYSQL'
-  - versionName: projects/${PROJECT_ID}/secrets/PORT/versions/latest
-    env: 'PORT'
