@@ -6,11 +6,12 @@
   "scripts": {
     "start": "node index.js",
     "start-dev": "nodemon index.js",
-    "test": "npx prisma generate && jest --runInBand --detectOpenHandles --forceExit --coverage --json --outputFile=test-results.json"
+    "test": "npx prisma generate && jest --runInBand --detectOpenHandles --forceExit --coverage"
   },
   "author": "Vincentius",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@google-cloud/secret-manager": "^5.0.1",
     "@prisma/client": "^5.4.1",
     "bcrypt": "^5.1.1",

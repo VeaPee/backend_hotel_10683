@@ -12,8 +12,10 @@ app.use(express.json());
 app.use('/api/v1/customer', customerRoutes);
 
 describe('Customer Routes', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     authMiddleware.mockImplementation((req, res, next) => next());
+    // Introduce a delay of 2 seconds between tests
+    await new Promise((resolve) => setTimeout(resolve, 3500));
   });
 
   afterEach(() => {
