@@ -45,8 +45,7 @@ steps:
       set -e
       echo "Deploy started at $(date)"
       gcloud auth configure-docker
-      gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command "sh -c 
-      'docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && \
+      gcloud compute ssh ${_VM_USER}@${_VM_NAME} --zone=${_ZONE} --command "sh -c 'docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/containers-repo/${_IMAGE_NAME}:${_IMAGE_TAG} && \
               docker stop app || true && \
               docker rm app || true && \
               docker run -d --name app \
