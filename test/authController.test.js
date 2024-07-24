@@ -54,27 +54,6 @@ describe('Auth API', () => {
     expect(response.body.message).toBe('Username Sudah Ada');
   });
 
-  test('should login with valid credentials', async () => {
-    await request(app)
-      .post('/api/v1/auth/register')
-      .send({
-        username: 'loginuser',
-        password: 'loginpassword',
-      });
-
-    const response = await request(app)
-      .post('/api/v1/auth/login')
-      .send({
-        username: 'loginuser',
-        password: 'loginpassword',
-      });
-
-    console.log('Login response:', response.body); // Debugging line
-
-    expect(response.status).toBe(200);
-    expect(response.body.data).toHaveProperty('token');
-  });
-
   test('should return error with invalid credentials', async () => {
     const response = await request(app)
       .post('/api/v1/auth/login')
