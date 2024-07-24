@@ -5,7 +5,7 @@ const fasilitasValidator = require("../utils/fasilitasValidator");
 
 const getAllFasilitas = async (req, res) => {
   let response = null;
-  const getFasilitasMessage = "Data Fasilitas berhasil diterima";
+  const getFasilitasMessage = "Data Fasilitas berhasil diterima (TESTING CI/CD)";
 
   try {
     const fasilitas = await prisma.fasilitasTambahan.findMany();
@@ -16,7 +16,7 @@ const getAllFasilitas = async (req, res) => {
       return;
     }
 
-    response = new Response.Success(true, "success",getFasilitasMessage, fasilitas);
+    response = new Response.Success(false, "success",getFasilitasMessage, fasilitas);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     const response = new Response.Error(true, "error",error.message);
