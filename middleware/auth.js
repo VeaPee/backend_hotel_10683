@@ -34,7 +34,7 @@ const Auth = async (req, res, next) => {
       next();
     });
   } catch (error) {
-    const response = new Response.Error(true, 'Internal server error');
+    const response = new Response.Error(true, 'Internal server error CI/CD');
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json(response);
   }
 }
