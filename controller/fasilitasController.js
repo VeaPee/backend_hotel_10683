@@ -5,7 +5,7 @@ const fasilitasValidator = require("../utils/fasilitasValidator");
 
 const getAllFasilitas = async (req, res) => {
   let response = null;
-  const getFasilitasMessage = "Data Fasilitas berhasil diterima (TESTING CI/CD) 25/07/2024 15:42";
+  const getFasilitasMessage = "Data Fasilitas berhasil diterima (TESTING CI/CD) 25/07/2024 15:51";
 
   try {
     const fasilitas = await prisma.fasilitasTambahan.findMany();
